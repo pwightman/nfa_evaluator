@@ -1,0 +1,12 @@
+Final Project Proposal
+
+Group Members:
+	Parker Wightman	
+	Adam Walz
+	Michael Hogenson
+
+We have chosen to build a version of the iNFAnt NFA evaluator described in the following paper:
+
+http://dl.acm.org/citation.cfm?id=1880157
+
+We have asked both Ganesh and Mary Hall if we can do this as a joint project with the CS4961 final project (Parallel Programming), and both professors have agreed that it sounds doable. The parts of the project that pertain to CS3100 include RE -> NFA conversion, developing algorithms (both parallel and sequential) for evaluating an NFA on a given string. The parts pertaining to CS4961 will be implementing an algorithm to evalute a single string over hundreds/thousnads of NFA's in parallel using the CUDA architecture. We will be analyzing the performance of both the sequential and parallel algorithms, as well as come up with unique use cases and scenarios not detailed in the paper. We will be using the CUDA architecture for the implementation of our parallel algorithms.
