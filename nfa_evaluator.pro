@@ -11,6 +11,7 @@ QT       -= gui
 TARGET = nfa_evaluator
 CONFIG   += console
 CONFIG   -= app_bundle
+CONFIG += debug
 
 TEMPLATE = app
 

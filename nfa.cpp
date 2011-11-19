@@ -1,7 +1,8 @@
 #include "nfa.h"
 #include "stdio.h"
+#include <QHashIterator>
 
-Nfa::Nfa(QSet<QString*>* Q, QString* q0, QSet<QString*>* sigma, QHash<QPair<QString*, QString*>*, QSet<QString*>*>* delta, QSet<QString*>* f)
+Nfa::Nfa(QSet<QString>* Q, QString q0, QSet<QString>* sigma, QHash<QPair<QString, QString>*, QSet<QString>*>* delta, QSet<QString>* f)
 {
     this->Q = Q;
     this->q0 = q0;
@@ -10,26 +11,47 @@ Nfa::Nfa(QSet<QString*>* Q, QString* q0, QSet<QString*>* sigma, QHash<QPair<QStr
     this->f = f;
 }
 
-Nfa* Nfa::createNfa(QSet<QString*>* Q, QString* q0, QSet<QString*>* sigma, QHash<QPair<QString*, QString*>*, QSet<QString*>*>* delta, QSet<QString*>* f)
+Nfa* Nfa::createNfa(QSet<QString>* Q, QString q0, QSet<QString>* sigma, QHash<QPair<QString, QString>*, QSet<QString>*>* delta, QSet<QString>* f)
 {
+    QHashIterator<QPair<QString, QString>*, QSet<QString>*> i(*delta);
+    QPair<QString, QString>* pair;
+    while (i.hasNext())
+    {
+        i.next();
+        pair = i.key();
+        printf("key< %s %s >, pair{ ", pair->first.toStdString().c_str(), pair->second.toStdString().c_str());
+        QSet<QString>* value = i.value();
+        QSetIterator<QString> j(*value);
+        while (j.hasNext())
+        {
+            printf("%s ", j.next().toStdString().c_str());
+        }
+        printf("}\n");
+    }
+
     return new Nfa(Q, q0, sigma, delta, f);
 }
 
-QSet<QString*>* Nfa::runNfa()
+QSet<QString>* Nfa::runNfa()
 {
-    Set<QString*>* qSet = new QSet<QString*>();
+    QSet<QString>* qSet = new QSet<QString>();
     qSet->insert(q0);
 
-    QPair<QString*, QString*>* pair = new QPair<QString*, QString*>();
+    QPair<QString, QString>* pair = new QPair<QString, QString>();
     pair->first = q0;
-    pair->second = new QString("@");
+    pair->second = QString("@");
+    // printf("%s\n", delta
+
     if (delta->contains(pair))
     {
         printf("Got here");
     }
+
+    // Stub
+    return NULL;
 }
 
-/**
+/*
 
 Pseudo-code for interative nfa algorithm
 using this we should be able to parallelize using openMP
@@ -56,4 +78,4 @@ run_nfa(str)
      return empty
   return q_set
 
-  **/
+  */
