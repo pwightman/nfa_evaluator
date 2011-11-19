@@ -19,3 +19,6 @@ SOURCES += main.cpp \
 
 HEADERS += \
     nfa.h
+
+QMAKE_CXXFLAGS += -fopenmp
+QMAKE_LFLAGS *= -fopenmp
