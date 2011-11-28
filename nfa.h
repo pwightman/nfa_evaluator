@@ -18,6 +18,12 @@ public:
     QSet<QString>* runNfa(QString string);
     QSet<QString>* runNfaP(QString string);
 
+    /*
+     * Prints a string that python can read in as its own native data structures
+     * (Used for testing)
+     */
+    QString toPyString();
+
 private:
     // Private member variables.
     QSet<QString>* Q;
