@@ -13,6 +13,10 @@ CONFIG   += console
 CONFIG   -= app_bundle
 CONFIG += debug
 
+mac {
+  CONFIG -= app_bundle
+}
+
 TEMPLATE = app
 
 SOURCES += main.cpp \
