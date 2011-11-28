@@ -1,0 +1,11 @@
+This directory contains python file representing finite automata operations. 
+
+The following files will be used in conjunction to create a test harness for re->nfa conversions. An RE s will be inputted to reparse(s) and the resulting nfa will be converted to a dfa and then minimized. Using this minimized dfa we can take advantage of isomorphism to determine the corectness of our C++ RE->NFA code. 
+
+dfa.py - make, run, and print a dfa. Also given a dfa, there is a method allowing the convert to a gnfa and delete states from the gnfa. This allows the dfa to be converted to a regular expression.
+
+nfa.py - make, run, and print an nfa. Convert an nfa to a dfa.
+
+mindfa.py - minimizes a dfa
+
+reparse.py - parses a regular expression and returns an nfa using lex to parse and yacc to generate parsing rules. 
