@@ -1,0 +1,8 @@
+*.swp
+*.swo
+*~
+a.out
+*.o
+Makefile
+__pycache__/
+nfa_evaluator
