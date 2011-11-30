@@ -9,6 +9,7 @@ Nfa::Nfa(QSet<QString>* Q, QString q0, QSet<QString>* sigma, QHash<QPair<QString
     this->sigma = sigma;
     this->delta = delta;
     this->f = f;
+    this->verbose = true;
 }
 
 Nfa* Nfa::createNfa(QSet<QString>* Q, QString q0, QSet<QString>* sigma, QHash<QPair<QString, QString>, QSet<QString>*>* delta, QSet<QString>* f)
@@ -42,7 +43,33 @@ void Nfa::debugPrintSet(QSet<QString>* set)
     printf("}");
 }
 
-bool Nfa::isValidString(QString string)
+bool Nfa::isValidString(QString string, bool isParallel)
+{
+    // Save the set from running runNfa into a variable so that it can
+    // be properly deleted.
+    QSet<QString>* finalStates;
+    if (isParallel)
+    {
+        if (verbose)
+        {
+            printf("Traversing NFA in parallel.\n");
+        }
+        finalStates = runNfaP(string);
+    }
+    else
+    {
+        if (verbose)
+        {
+            printf("Traversing NFA sequentially.\n");
+        }
+        finalStates = runNfa(string);
+    }
+    bool intersects = finalStates->intersect(*f).count() > 0;
+    delete finalStates; // Remove memory allocated for finalStates.
+    return intersects;
+}
+
+QSet<QString>* Nfa::runNfa(QString string)
 {
     // debugPrintDelta();
     QSet<QString>* qSet = new QSet<QString>();
@@ -92,13 +119,11 @@ bool Nfa::isValidString(QString string)
     /*debugPrintSet(qSet);
     printf("\n");*/
     // printf("%d\n", qSet->intersect(*f).count() > 0);
-    bool intersects = qSet->intersect(*f).count() > 0;
-    delete qSet;
     delete newSet;
-    return intersects;
+    return qSet;
 }
 
-/*QSet<QString>* Nfa::runNfaP(QString string)
+QSet<QString>* Nfa::runNfaP(QString string)
 {
     // debugPrintDelta();
     QSet<QString>* qSet = new QSet<QString>();
@@ -149,7 +174,7 @@ bool Nfa::isValidString(QString string)
     //debugPrintSet(qSet);
     //printf("\n");
     return qSet;
-}*/
+}
 
 /*
 

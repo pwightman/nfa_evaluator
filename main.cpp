@@ -54,11 +54,20 @@ int main()
     delta->insert(pair3, set);
 
     Nfa* nfa = Nfa::createNfa(Q, q0, sigma, delta, f);
-    QTime t;
-    t.start();
-    printf("0101 Valid: %s\n", nfa->isValidString(QString("0101")) == 1 ? "Yes" : "No");
-    printf("01010 Valid: %s\n", nfa->isValidString(QString("01010")) == 1 ? "Yes" : "No");
+
+    // Sequential test.
+    // QTime t, t2;
+    // t.start();
+    printf("0101 Valid: %s\n", nfa->isValidString(QString("0101"), false) == 1 ? "Yes" : "No");
+    printf("01010 Valid: %s\n", nfa->isValidString(QString("01010"), false) == 1 ? "Yes" : "No");
     // printf("Linear run time: %d ms\n", t.elapsed());
+
+    // Parallel test.
+    // t2.start();
+    // printf("0101 Valid: %s\n", nfa->isValidString(QString("0101"), true) == 1 ? "Yes" : "No");
+    // printf("01010 Valid: %s\n", nfa->isValidString(QString("01010"), true) == 1 ? "Yes" : "No");
+    // printf("Parallel run time: %d ms\n", t2.elapsed());
+
     delete Q;
     delete sigma;
     delete delta;
