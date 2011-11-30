@@ -145,7 +145,7 @@ void assert_nfa(Nfa* nfa, QString str, bool expected, TestType type)
     if((*first) != (*second))
     {
       printf("FAILED: %s\n", str.toStdString().c_str());
-      printf("\tParallel and Sequential NFA's do not match:");
+      printf("\tParallel and Sequential result sets do not match:");
       printf("\tSequential : %s\n", debugString(first));
       printf("\tParallel   : %s\n", debugString(second));
     }
