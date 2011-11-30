@@ -42,7 +42,7 @@ void Nfa::debugPrintSet(QSet<QString>* set)
     printf("}");
 }
 
-QSet<QString>* Nfa::runNfa(QString string)
+bool Nfa::isValidString(QString string)
 {
     // debugPrintDelta();
     QSet<QString>* qSet = new QSet<QString>();
@@ -91,10 +91,14 @@ QSet<QString>* Nfa::runNfa(QString string)
 
     /*debugPrintSet(qSet);
     printf("\n");*/
-    return qSet;
+    // printf("%d\n", qSet->intersect(*f).count() > 0);
+    bool intersects = qSet->intersect(*f).count() > 0;
+    delete qSet;
+    delete newSet;
+    return intersects;
 }
 
-QSet<QString>* Nfa::runNfaP(QString string)
+/*QSet<QString>* Nfa::runNfaP(QString string)
 {
     // debugPrintDelta();
     QSet<QString>* qSet = new QSet<QString>();
@@ -108,8 +112,8 @@ QSet<QString>* Nfa::runNfaP(QString string)
     if (delta->contains(pair))
     {
         qSet->unite(*delta->value(pair));
-        /*debugPrintSet(qSet);
-        printf("\n");*/
+        //debugPrintSet(qSet);
+        //printf("\n");
     }
 
     QSet<QString>* newSet = new QSet<QString>();;
@@ -135,17 +139,17 @@ QSet<QString>* Nfa::runNfaP(QString string)
             qSet->clear();
             qSet->unite(*newSet); // Done this way for memory management.
 
-            /*if (qSet->count() == 0)
-            {
-                return qSet;
-            }*/
+            //if (qSet->count() == 0)
+            //{
+            //    return qSet;
+            //}
         }
     }
 
-    /*debugPrintSet(qSet);
-    printf("\n");*/
+    //debugPrintSet(qSet);
+    //printf("\n");
     return qSet;
-}
+}*/
 
 /*
 

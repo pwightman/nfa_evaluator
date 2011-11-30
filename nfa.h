@@ -15,8 +15,8 @@ public:
     Nfa(QSet<QString>* Q, QString q0, QSet<QString>* sigma, QHash<QPair<QString, QString>, QSet<QString>*>* delta, QSet<QString>* f);
 
     // TODO: Make private again.
-    QSet<QString>* runNfa(QString string);
-    QSet<QString>* runNfaP(QString string);
+    bool isValidString(QString string);
+    // QSet<QString>* runNfaP(QString string);
 
     /*
      * Prints a string that python can read in as its own native data structures

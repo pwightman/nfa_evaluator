@@ -56,10 +56,12 @@ int main()
     Nfa* nfa = Nfa::createNfa(Q, q0, sigma, delta, f);
     QTime t;
     t.start();
-    nfa->runNfa(QString("0101"));
-    printf("Linear run time: %d ms\n", t.elapsed());
-    QTime t2;
-    t2.start();
-    nfa->runNfaP(QString("0101"));
-    printf("Parallel run time: %d ms\n", t2.elapsed());
+    printf("0101 Valid: %s\n", nfa->isValidString(QString("0101")) == 1 ? "Yes" : "No");
+    printf("01010 Valid: %s\n", nfa->isValidString(QString("01010")) == 1 ? "Yes" : "No");
+    // printf("Linear run time: %d ms\n", t.elapsed());
+    delete Q;
+    delete sigma;
+    delete delta;
+    delete f;
+    delete nfa;
 }
