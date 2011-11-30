@@ -12,3 +12,4 @@ a.out
 __pycache__/
 nfa_evaluator
 test_nfa
+Makefile
