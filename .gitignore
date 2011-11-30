@@ -6,3 +6,4 @@ a.out
 Makefile
 __pycache__/
 nfa_evaluator
+test_nfa
