@@ -1,4 +1,5 @@
-CC=g++-4.2
+CC=gcc-4.2
+CXX=g++-4.2
 SOURCES=lex.yy.o reparse.cpp
 EXECUTABLE=reparse
 BISONFLAGS=-d
@@ -7,7 +8,7 @@ BISONDEBUG=--verbose --debug
 all: reparse
 
 $(EXECUTABLE): $(SOURCES)
-	$(CC) $(SOURCES) -o $(EXECUTABLE)
+	$(CXX) $(SOURCES) -o $(EXECUTABLE)
 
 lex.yy.c: reparse.l
 	flex reparse.l

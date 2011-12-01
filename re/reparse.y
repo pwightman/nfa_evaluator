@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define YYSTYPE char *
+  //#define YYSTYPE char *
 
 extern int yydebug;
 
@@ -33,11 +33,10 @@ main()
 
 %union
  {
-   char* str;
+   char* string;
  }
 
-%token t_PLUS t_STAR t_LPAREN t_RPAREN t_EPS
-%token <str> t_STRING
+%token <string> t_STRING
 %%
 
 commands:
@@ -50,9 +49,9 @@ p_expression_plus
 ;
 
 p_expression_plus:
-t_STRING t_PLUS t_STRING
+t_STRING '+' t_STRING
 {
-  printf("%s + %s",$1, $3);
+  printf("%s + %s",$1,$3);
 }
 ;
 
