@@ -1,16 +1,22 @@
-CC=cc
+CC=g++-4.2
+SOURCES=lex.yy.o reparse.cpp
 EXECUTABLE=reparse
+BISONFLAGS=-d
+BISONDEBUG=--verbose --debug
 
 all: reparse
 
-reparse: lex.yy.c y.tab.c
-	$(CC) lex.yy.c y.tab.c -o $(EXECUTABLE)
+$(EXECUTABLE): $(SOURCES)
+	$(CC) $(SOURCES) -o $(EXECUTABLE)
 
-lex.yy.c: reparse.y
-	lex reparse.l
+lex.yy.c: reparse.l
+	flex reparse.l
 
-y.tab.c: reparse.y
-	yacc -d reparse.y
+reparse.tab.c: reparse.y
+	bison $(BISONDEBUG) $(BISONFLAGS) reparse.y -o reparse.cpp
+
+lex.yy.o: lex.yy.c reparse.tab.c
+	$(CC) -c lex.yy.c -o lex.yy.o
 
 clean:
-	/bin/rm -rf lex.yy.c y.tab.* $(EXECUTABLE)
+	/bin/rm -rf $(SOURCES) reparse.hpp lex.yy.c reparse.output $(EXECUTABLE)
