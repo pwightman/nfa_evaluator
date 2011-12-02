@@ -31,6 +31,7 @@ private:
     QString q0;
     QSet<QString>* sigma;
     QHash<QPair<QString, QString>, QSet<QString>*>* delta;
+    QHash<QPair<QString, QString>, QSet<QString>*> *reverseDelta;
     QSet<QString>* f;
 
     // Private methods.

@@ -8,6 +8,7 @@ Nfa::Nfa(QSet<QString>* Q, QString q0, QSet<QString>* sigma, QHash<QPair<QString
     this->q0 = q0;
     this->sigma = sigma;
     this->delta = delta;
+    createReverseDelta();
     this->f = f;
     this->verbose = true;
 }
