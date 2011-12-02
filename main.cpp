@@ -10,7 +10,7 @@ int main()
 {
     // QCoreApplication a(argc, argv);
     // return a.exec();
-    QSet<QString>* Q = new QSet<QString>();
+    /*QSet<QString>* Q = new QSet<QString>();
     QString q0("");
     QSet<QString>* sigma = new QSet<QString>();
     QHash<QPair<QString, QString>, QSet<QString>*>* delta = new QHash<QPair<QString, QString>, QSet<QString>*>();
@@ -72,5 +72,8 @@ int main()
     delete sigma;
     delete delta;
     delete f;
-    delete nfa;
+    delete nfa;*/
+
+    Nfa* nfa = new Nfa();
+
 }
