@@ -5,6 +5,7 @@
 #include <QSet>
 #include <QString>
 #include <QPair>
+#include "traversal.h"
 
 class Nfa
 {
@@ -19,6 +20,8 @@ public:
     QSet<QString>* runNfa(QString string);
     QSet<QString>* runNfaP(QString string);
 
+    QList<Traversal*>* step(Traversal* trav, QString* str);
+
     /*
      * Prints a string that python can read in as its own native data structures
      * (Used for testing)
@@ -32,6 +35,8 @@ private:
     QSet<QString>* sigma;
     QHash<QPair<QString, QString>, QSet<QString>*>* delta;
     QSet<QString>* f;
+
+    QSet<QString>* traverse(Traversal* traversal, QString* str);
 
     // Private methods.
     Nfa();

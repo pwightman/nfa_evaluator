@@ -20,9 +20,11 @@ mac {
 TEMPLATE = app
 
 SOURCES += main.cpp \
+    traversal.cpp \
     nfa.cpp
 
 HEADERS += \
+    traversal.h\
     nfa.h
 
 QMAKE_CXXFLAGS += -fopenmp
