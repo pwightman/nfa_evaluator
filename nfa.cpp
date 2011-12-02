@@ -2,20 +2,19 @@
 #include "stdio.h"
 #include <QHashIterator>
 
-Nfa::Nfa(QSet<QString>* Q, QString q0, QSet<QString>* sigma, QHash<QPair<QString, QString>, QSet<QString>*>* delta, QSet<QString>* f)
+Nfa::Nfa()
 {
-    this->Q = Q;
-    this->q0 = q0;
-    this->sigma = sigma;
-    this->delta = delta;
-    createReverseDelta();
-    this->f = f;
-    this->verbose = true;
+    Q = new QSet<QString>();
+    q0 = "";
+    sigma = new QSet<QString>();
+    delta = new QHash<QPair<QString, QString>, QSet<QString>*>();
+    reverseDelta =  new QHash<QPair<QString, QString>, QSet<QString>*>();
+    f = new QSet<QString>();
 }
 
-Nfa* Nfa::createNfa(QSet<QString>* Q, QString q0, QSet<QString>* sigma, QHash<QPair<QString, QString>, QSet<QString>*>* delta, QSet<QString>* f)
+void Nfa::addTransition(QString source, QString destination, QString path)
 {
-    return new Nfa(Q, q0, sigma, delta, f);
+
 }
 
 void Nfa::debugPrintDelta()
@@ -51,7 +50,7 @@ bool Nfa::isValidString(QString string, bool isParallel)
     QSet<QString>* finalStates;
     if (isParallel)
     {
-        if (verbose)
+        if (VERBOSE)
         {
             printf("Traversing NFA in parallel.\n");
         }
@@ -59,7 +58,7 @@ bool Nfa::isValidString(QString string, bool isParallel)
     }
     else
     {
-        if (verbose)
+        if (VERBOSE)
         {
             printf("Traversing NFA sequentially.\n");
         }
