@@ -8,7 +8,7 @@ QT       += core
 
 QT       -= gui
 
-TARGET = nfa_evaluator
+TARGET = test_nfa
 CONFIG   += console
 CONFIG   -= app_bundle
 CONFIG += debug
@@ -19,13 +19,12 @@ mac {
 
 TEMPLATE = app
 
-SOURCES += main.cpp \
-    traversal.cpp \
+SOURCES += test_nfa.cpp \
     nfa.cpp
 
 HEADERS += \
-    traversal.h\
     nfa.h
 
 QMAKE_CXXFLAGS += -fopenmp
 QMAKE_LFLAGS *= -fopenmp
+

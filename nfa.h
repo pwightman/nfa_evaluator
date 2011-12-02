@@ -7,6 +7,7 @@
 #include <QSet>
 #include <QString>
 #include <QPair>
+#include "traversal.h"
 
 class Nfa
 {
@@ -18,6 +19,8 @@ public:
     void makeInitial(QString node);
     void makeFinal(QString node);
     bool isValidString(QString string, bool isParallel);
+
+    QList<Traversal*>* step(Traversal* trav, QString* str);
 
     /*
      * Prints a string that python can read in as its own native data structures
@@ -33,6 +36,8 @@ private:
     QHash<QPair<QString, QString>, QSet<QString>*>* delta;
     QHash<QPair<QString, QString>, QSet<QString>*>* reverseDelta;
     QSet<QString>* f;
+
+    QSet<QString>* traverse(Traversal* traversal, QString* str);
 
     // Private methods.
     void debugPrintDelta();
