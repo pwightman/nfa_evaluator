@@ -4,12 +4,12 @@
 
 Nfa::Nfa()
 {
-    Q = new QSet<QString>();
+    /*Q = new QSet<QString>();
     q0 = "";
     sigma = new QSet<QString>();
     delta = new QHash<QPair<QString, QString>, QSet<QString>*>();
     reverseDelta =  new QHash<QPair<QString, QString>, QSet<QString>*>();
-    f = new QSet<QString>();
+    f = new QSet<QString>();*/
 }
 
 /*void Nfa::addTransition(QString source, QString destination, QString path)
@@ -142,7 +142,7 @@ QSet<QString>* Nfa::traverse(QSet<Traversal*>* qSet, QString* str)
 
 }*/
 
-QSet<QString>* Nfa::runNfaP(QString string)
+/*QSet<QString>* Nfa::runNfaP(QString string)
 {
     // debugPrintDelta();
     QSet<QString>* qSet = new QSet<QString>();
@@ -194,5 +194,4 @@ QSet<QString>* Nfa::runNfaP(QString string)
     //debugPrintSet(qSet);
     //printf("\n");
     return qSet;
-}
-
+}*/

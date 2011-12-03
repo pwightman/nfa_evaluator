@@ -27,21 +27,21 @@ public:
 
 private:
     // Private member variables.
-    QSet<QString>* Q;
-    QString q0;
+    QSet<Node>* Q;
+    Node q0;
     QSet<QString>* sigma;
-    QHash<QPair<QString, QString>, QSet<QString>*>* delta;
-    QHash<QPair<QString, QString>, QSet<QString>*>* reverseDelta;
-    QSet<QString>* f;
+    QSet<Node>* f;
+    // NOTE: Delta was removed because it's no longer needed.
 
-    QSet<QString>* traverse(QSet<Traversal*>* traversal, QString* str);
-    QSet<Traversal*>* setupInitials(Traversal* trav);
+
+    /*QSet<QString>* traverse(QSet<Traversal*>* traversal, QString* str);
+    QSet<Traversal*>* setupInitials(Traversal* trav);*/
 
     // Private methods.
-    void debugPrintDelta();
-    void debugPrintSet(QSet<QString>* set);
-    QSet<QString>* runNfa(QString string);
-    QSet<QString>* runNfaP(QString string);
+    // void debugPrintDelta();
+    // void debugPrintSet(QSet<QString>* set);
+    // QSet<QString>* runNfa(QString string);
+    // QSet<QString>* runNfaP(QString string);
 };
 
 #endif // NFA_H
