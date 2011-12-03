@@ -20,10 +20,26 @@ void debugPrintSet(QSet<Node>* set)
     printf("]\n");
 }
 
+static int qHash(const Node& node)
+{
+    return (int)(long)&node;
+}
+
+void hash_testing()
+{
+    QSet<Node> set;
+    Node* testingNode = new Node();
+
+    int i;
+    
+    printf("contains before add: %s\n", (set.contains(*testingNode) ? "Yes" : "No"));
+    set.insert(*testingNode);
+    printf("contains after add: %s\n", (set.contains(*testingNode) ? "Yes" : "No"));
+    printf("\n---\n\n");
+}
+
 int main()
 {
-    // QCoreApplication a(argc, argv);
-    // return a.exec();
 
     // Nfa* nfa = new Nfa();
     Node* s1 = new Node("s1");
@@ -77,6 +93,8 @@ int main()
     // Use the same NFA as described above, but change the state names to be able
     // to continue testing.
 
+    printf("Working\n");
+
     Node* s11 = new Node("s1");
     Node* s12 = new Node("s2");
     Node* s13 = new Node("s3");
@@ -84,23 +102,35 @@ int main()
     Node* s15 = new Node("s4");
     Node* s16 = new Node("s6");
 
-    Nfa* nfa = new Nfa();
-    nfa->addTransition(*s11, *s13, "1");
-    nfa->addTransition(*s11, *s14, "@");
-    nfa->addTransition(*s11, *s16, "2");
-    nfa->addTransition(*s16, *s12, "0");
-    nfa->addTransition(*s16, *s12, "1");
-    nfa->addTransition(*s14, *s12, "3");
-    nfa->addTransition(*s13, *s12, "4");
-    nfa->addTransition(*s13, *s14, "@");
-    nfa->addTransition(*s12, *s11, "4");
-    nfa->addTransition(*s12, *s15, "1");
-    nfa->addTransition(*s15, *s11, "2");
-    nfa->addTransition(*s15, *s13, "2");
-    nfa->addTransition(*s13, *s15, "2");
-    nfa->makeInitial(*s11);
-    nfa->makeFinal(*s12);
-    nfa->makeFinal(*s14);
+    Nfa nfa;
+    nfa.addTransition(*s11, *s13, "1");
+    nfa.addTransition(*s11, *s14, "@");
+    nfa.addTransition(*s11, *s16, "2");
+    nfa.addTransition(*s16, *s12, "0");
+    nfa.addTransition(*s16, *s12, "1");
+    nfa.addTransition(*s14, *s12, "3");
+    nfa.addTransition(*s13, *s12, "4");
+    nfa.addTransition(*s13, *s14, "@");
+    nfa.addTransition(*s12, *s11, "4");
+    nfa.addTransition(*s12, *s15, "1");
+    nfa.addTransition(*s15, *s11, "2");
+    nfa.addTransition(*s15, *s13, "2");
+    nfa.addTransition(*s13, *s15, "2");
+    nfa.makeInitial(*s11);
+
+    /* This is where it's crashing. For some reason, when it was:
+         Nfa* nfa = new Nfa();
+
+       nfa.f has an address in the constructor, but is NULL inside of makeFinal.
+
+       I changed it to
+         Nfa nfa;
+
+       and now nfa.f has an adress, but it's different than the one in the constructor.
+       Which probably just means it's garbage. Bleargh...
+    */
+    nfa.makeFinal(*s12);
+    nfa.makeFinal(*s14);
 
     // Completely new Nfa representing (a+b)b
     /*Node* s21 = new Node("s1");
