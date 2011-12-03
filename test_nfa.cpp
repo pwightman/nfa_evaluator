@@ -43,6 +43,7 @@ const char* testTypeStr(TestType type)
 /*
  * Defines the NFA: even 1's and 0's (?)
  */
+
 Nfa* nfa_1()
 {
     QSet<QString>* Q = new QSet<QString>();

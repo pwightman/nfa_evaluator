@@ -176,7 +176,7 @@ void Node::debugPrint()
     }
 }
 
-int qHash(const Node& node)
+static int qHash(const Node& node)
 {
     return (int)(long)&node;
 }

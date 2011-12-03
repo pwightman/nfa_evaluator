@@ -2,10 +2,12 @@
 #include "stdio.h"
 #include <QHashIterator>
 
+
 Nfa::Nfa()
 {
     Node* q0 = new Node();
     QSet<Node>* f = new QSet<Node>();
+    printf("f's address: %d\n", (long)f);
 }
 
 void Nfa::addTransition(Node& source, Node& destination, QString value)
@@ -20,6 +22,7 @@ void Nfa::makeInitial(Node& node)
 
 void Nfa::makeFinal(Node& node)
 {
+    printf("f's address: %d\n", (long)f);
     f->insert(node);
 }
 
@@ -62,6 +65,11 @@ void Nfa::star()
 
     // Make newq0 the new q0
     q0 = newq0;
+}
+
+static int qHash(const Node& node)
+{
+    return (int)(long)&node;
 }
 
 /*void Nfa::debugPrintDelta()
