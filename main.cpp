@@ -76,12 +76,11 @@ int main()
     delete nfa;*/
 
     // Nfa* nfa = new Nfa();
-    Node* s1 = new Node();
-    Node* s2 = new Node();
-    Node* s3 = new Node();
-    Node* s4 = new Node();
-    Node* s5 = new Node();
-    Node* s6 = new Node();
+    Node* s1 = new Node("s1");
+    Node* s2 = new Node("s2");
+    Node* s3 = new Node("s3");
+    Node* s4 = new Node("s4");
+    Node* s6 = new Node("s6");
     s1->addRelation(*s3, "1");
     s1->addRelation(*s4, "@");
     s6->addRelation(*s2, "0");
@@ -90,9 +89,9 @@ int main()
     s3->addRelation(*s2, "4");
     s2->addRelation(*s1, "4");
 
-    s1->debugPrint(*s2);
-    s3->debugPrint(*s2);
-    s4->debugPrint(*s2);
-    s6->debugPrint(*s2);
-    s2->debugPrint(*s3);
+    s1->debugPrint();
+    s3->debugPrint();
+    s4->debugPrint();
+    s6->debugPrint();
+    s2->debugPrint();
 }

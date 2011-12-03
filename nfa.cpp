@@ -12,12 +12,12 @@ Nfa::Nfa()
     f = new QSet<QString>();
 }
 
-void Nfa::addTransition(QString source, QString destination, QString path)
+/*void Nfa::addTransition(QString source, QString destination, QString path)
 {
 
-}
+}*/
 
-void Nfa::debugPrintDelta()
+/*void Nfa::debugPrintDelta()
 {
     QHashIterator<QPair<QString, QString>, QSet<QString>*> i(*delta);
     QPair<QString, QString> pair;
@@ -88,47 +88,47 @@ QSet<Traversal*>* Nfa::setupInitials(Traversal* trav)
 
 QSet<QString>* Nfa::traverse(QSet<Traversal*>* qSet, QString* str)
 {
-    /* Special Case: Check to see if epsilon jump exists between initial state and another state */
+    // Special Case: Check to see if epsilon jump exists between initial state and another state
     QPair<QString, QString> pair;
     pair.first = *(trav->state());
     pair.second = QString("@");
 
-    /* If there's an epsilon jump to any other states, jump */
+    // If there's an epsilon jump to any other states, jump
     if (delta->contains(pair))
     {
         qSet->unite(*delta->value(pair));
     }
 
-    /* Represents all the states that you WILL be in, during the next iteration */
+    // Represents all the states that you WILL be in, during the next iteration
     QSet<QString>* newSet = new QSet<QString>();;
     for (int i = 0; i < str->size(); i++)
     {
-        /* Empty the new states (current states are kept in qSet)  */
+        // Empty the new states (current states are kept in qSet)
         newSet->clear();
         QSetIterator<QString> j(*qSet);
         while(j.hasNext())
         {
-            /* Create a pair of State and transition */
+            // Create a pair of State and transition
             pair.first = j.next();
             pair.second = (*str)[i];
-            /* If the State-Transition pair has any matches, add them to the new set */
+            // If the State-Transition pair has any matches, add them to the new set
             if (delta->contains(pair))
             {
                 newSet->unite(*delta->value(pair));
             }
 
-            /* Check for epsilon jumps, add them to the new set */
+            // Check for epsilon jumps, add them to the new set
             pair.second = QString("@");
             if (delta->contains(pair))
             {
                 newSet->unite(*delta->value(pair));
             }
             
-            /* newSet becomes current set (qSet) for the next iteration */
+            // newSet becomes current set (qSet) for the next iteration
             qSet->clear();
             qSet->unite(*newSet); // Done this way for memory management.
 
-            /* If all the transitions leave the NFA, no matches, you're done */
+            // If all the transitions leave the NFA, no matches, you're done
             if (qSet->count() == 0)
             {
                 return qSet;
@@ -136,15 +136,11 @@ QSet<QString>* Nfa::traverse(QSet<Traversal*>* qSet, QString* str)
         }
     }
 
-    /* Congrats! There were matches! */
+    // Congrats! There were matches!
     delete newSet;
     return qSet;
-}
 
-QList<Traversal*>* Nfa::step(Traversal* trav, QString* str)
-{
-  return new QList<Traversal*>();
-}
+}*/
 
 QSet<QString>* Nfa::runNfaP(QString string)
 {

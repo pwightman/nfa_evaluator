@@ -1,45 +1,82 @@
 #include "node.h"
 #include "stdio.h"
 #include <QSetIterator>
+#include <QHashIterator>
 
 Node::Node()
 {
-    connections = new QHash<Node, QSet<QString>*>();
-    reverseConnections = new QHash<Node, QSet<QString>*>();
+    connections = new QHash<QString, QSet<Node>*>();
+    reverseConnections = new QHash<QString, QSet<Node>*>();
+}
+
+Node::Node(QString name)
+{
+    connections = new QHash<QString, QSet<Node>*>();
+    reverseConnections = new QHash<QString, QSet<Node>*>();
+    this->name = name;
+}
+
+QString Node::getName()
+{
+    return name;
 }
 
 void Node::addRelation(Node& destination, QString value)
 {
+    printf("Checking to see if %s is in the hash.\n", value.toStdString().c_str());
     // Add forward traversal relation.
-    if (connections->contains(destination))
+    if (connections->contains(value))
     {
-        QSet<QString>* set = connections->value(destination);
-        set->insert(value);
+        QSet<Node>* set = connections->value(value);
+        set->insert(destination);
     }
     else
     {
-        QSet<QString>* set = new QSet<QString>();
-        set->insert(value);
-        connections->insert(destination, set);
+        printf("%s wasn't found in the hash, so creating a new entry.\n", value.toStdString().c_str());
+        QSet<Node>* set = new QSet<Node>();
+        set->insert(destination);
+        connections->insert(value, set);
     }
 
     // Add backward traversal relation.
-    if (destination.reverseConnections->contains(*this))
+    if (destination.reverseConnections->contains(value))
     {
-        QSet<QString>* set = destination.reverseConnections->value(*this);
-        set->insert(value);
+        QSet<Node>* set = destination.reverseConnections->value(value);
+        set->insert(*this);
     }
     else
     {
-        QSet<QString>* set = new QSet<QString>();
-        set->insert(value);
-        destination.reverseConnections->insert(*this, set);
+        QSet<Node>* set = new QSet<Node>();
+        set->insert(*this);
+        destination.reverseConnections->insert(value, set);
     }
+    printf("---\n");
 }
 
-void Node::debugPrint(Node& node)
+void Node::debugPrint()
 {
-    if (connections->contains(node))
+    if (name == "")
+    {
+        printf("Debug print won't work because name hasn't been set.\n");
+        return;
+    }
+
+    QHashIterator<QString, QSet<Node>*> i(*connections);
+    while(i.hasNext())
+    {
+        i.next();
+        QString string = i.key();
+        QSet<Node>* set = i.value();
+        printf("%s -> [ ", string.toStdString().c_str());
+        QSetIterator<Node> j(*set);
+        while (j.hasNext())
+        {
+            printf("%s ", j.next().name.toStdString().c_str());
+        }
+        printf("]\n");
+    }
+
+    /*if (connections->contains(node))
     {
         QSetIterator<QString> i(*connections->value(node));
 
@@ -71,7 +108,7 @@ void Node::debugPrint(Node& node)
     {
         printf("No reverse connections.\n");
     }
-    printf("\n");
+    printf("\n");*/
 }
 
 int qHash(const Node& node)
