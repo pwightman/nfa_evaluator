@@ -101,4 +101,29 @@ int main()
     nfa->makeInitial(*s11);
     nfa->makeFinal(*s12);
     nfa->makeFinal(*s14);
+
+    // Completely new Nfa representing (a+b)b
+    /*Node* s21 = new Node("s1");
+    Node* s22 = new Node("s2");
+    Node* s23 = new Node("s3");
+    Node* s24 = new Node("s4");
+
+    Nfa* nfa1 = new Nfa();
+    nfa1->addTransition(*s21, *s22, "a");
+
+    Nfa* nfa2 = new Nfa();
+    nfa2->addTransition(*s23, *s24, "b");
+
+    // Union of a + b
+    nfa1->unite(*nfa2);
+
+    // Not quite clear how a concatenation would work here...
+    Node* s25 = new Node("s5");
+    Node* s26 = new Node("s6");
+    Nfa* nfa3 = new Nfa();
+    nfa3->addTransition(*s25, *s26, "b");
+
+    nfa1->concatenate(*nfa3);
+
+    // At this point Nfa1 should be (a+b)b...*/
 }

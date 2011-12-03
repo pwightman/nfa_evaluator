@@ -38,7 +38,7 @@ void Nfa::concatenate(Nfa& nfa)
     while(i.hasNext())
     {
         Node node = i.next();
-        node.addRelation(nfa.q0, "@");
+        node.addRelation(*nfa.q0, "@");
     }
 
     // Make this node's final states the concatentated final states.
@@ -57,7 +57,7 @@ void Nfa::star()
     while (i.hasNext())
     {
         Node node = i.next();
-        node.addRelation(q0, "@");
+        node.addRelation(*q0, "@");
     }
 
     // Make newq0 the new q0
