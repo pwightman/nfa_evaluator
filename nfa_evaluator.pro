@@ -21,11 +21,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     traversal.cpp \
-    nfa.cpp
+    nfa.cpp \
+    node.cpp
 
 HEADERS += \
     traversal.h\
-    nfa.h
+    nfa.h \
+    node.h
 
 QMAKE_CXXFLAGS += -fopenmp
 QMAKE_LFLAGS *= -fopenmp

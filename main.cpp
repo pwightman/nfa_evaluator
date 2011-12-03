@@ -5,6 +5,7 @@
 #include "stdio.h"
 
 #include "nfa.h"
+#include "node.h"
 
 int main()
 {
@@ -74,6 +75,24 @@ int main()
     delete f;
     delete nfa;*/
 
-    Nfa* nfa = new Nfa();
+    // Nfa* nfa = new Nfa();
+    Node* s1 = new Node();
+    Node* s2 = new Node();
+    Node* s3 = new Node();
+    Node* s4 = new Node();
+    Node* s5 = new Node();
+    Node* s6 = new Node();
+    s1->addRelation(*s3, "1");
+    s1->addRelation(*s4, "@");
+    s6->addRelation(*s2, "0");
+    s6->addRelation(*s2, "1");
+    s4->addRelation(*s2, "3");
+    s3->addRelation(*s2, "4");
+    s2->addRelation(*s1, "4");
 
+    s1->debugPrint(*s2);
+    s3->debugPrint(*s2);
+    s4->debugPrint(*s2);
+    s6->debugPrint(*s2);
+    s2->debugPrint(*s3);
 }
