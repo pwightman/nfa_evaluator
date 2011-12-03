@@ -1,5 +1,6 @@
 CC=gcc-4.2
 CXX=g++-4.2
+INCLUDE=-I ..
 SOURCES=lex.yy.o reparse.cpp
 EXECUTABLE=reparse
 BISONFLAGS=-d
@@ -8,13 +9,13 @@ BISONDEBUG=--verbose --debug
 all: reparse
 
 $(EXECUTABLE): $(SOURCES)
-	$(CXX) $(SOURCES) -o $(EXECUTABLE)
+	$(CXX) $(INCLUDE) $(SOURCES) -o $(EXECUTABLE)
 
 lex.yy.c: reparse.l
 	flex reparse.l
 
 reparse.tab.c: reparse.y
-	bison $(BISONDEBUG) $(BISONFLAGS) reparse.y -o reparse.cpp
+	bison $(BISONFLAGS) reparse.y -o reparse.cpp
 
 lex.yy.o: lex.yy.c reparse.tab.c
 	$(CC) -c lex.yy.c -o lex.yy.o
