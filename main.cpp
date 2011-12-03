@@ -73,4 +73,32 @@ int main()
         printf("Forward traversal set of node s5 on 6: ");
         debugPrintSet(s5->traverseOn("6", FORWARDS));
     }
+
+    // Use the same NFA as described above, but change the state names to be able
+    // to continue testing.
+
+    Node* s11 = new Node("s1");
+    Node* s12 = new Node("s2");
+    Node* s13 = new Node("s3");
+    Node* s14 = new Node("s4");
+    Node* s15 = new Node("s4");
+    Node* s16 = new Node("s6");
+
+    Nfa* nfa = new Nfa();
+    nfa->addTransition(*s11, *s13, "1");
+    nfa->addTransition(*s11, *s14, "@");
+    nfa->addTransition(*s11, *s16, "2");
+    nfa->addTransition(*s16, *s12, "0");
+    nfa->addTransition(*s16, *s12, "1");
+    nfa->addTransition(*s14, *s12, "3");
+    nfa->addTransition(*s13, *s12, "4");
+    nfa->addTransition(*s13, *s14, "@");
+    nfa->addTransition(*s12, *s11, "4");
+    nfa->addTransition(*s12, *s15, "1");
+    nfa->addTransition(*s15, *s11, "2");
+    nfa->addTransition(*s15, *s13, "2");
+    nfa->addTransition(*s13, *s15, "2");
+    nfa->makeInitial(*s11);
+    nfa->makeFinal(*s12);
+    nfa->makeFinal(*s14);
 }

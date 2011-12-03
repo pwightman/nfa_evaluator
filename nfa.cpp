@@ -4,18 +4,65 @@
 
 Nfa::Nfa()
 {
-    /*Q = new QSet<QString>();
-    q0 = "";
-    sigma = new QSet<QString>();
-    delta = new QHash<QPair<QString, QString>, QSet<QString>*>();
-    reverseDelta =  new QHash<QPair<QString, QString>, QSet<QString>*>();
-    f = new QSet<QString>();*/
+    Node* q0 = new Node();
+    QSet<Node>* f = new QSet<Node>();
 }
 
-/*void Nfa::addTransition(QString source, QString destination, QString path)
+void Nfa::addTransition(Node& source, Node& destination, QString value)
 {
+    source.addRelation(destination, value);
+}
 
-}*/
+void Nfa::makeInitial(Node& node)
+{
+    q0 = &node;
+}
+
+void Nfa::makeFinal(Node& node)
+{
+    f->insert(node);
+}
+
+void Nfa::unite(Nfa& nfa)
+{
+    Node* newq0 = new Node("AG"); // AG: Auto generated.
+    newq0->addRelation(*q0, "@");
+    newq0->addRelation(*nfa.q0, "@");
+    q0 = newq0;
+}
+
+void Nfa::concatenate(Nfa& nfa)
+{
+    // Make all the final states transition to nfa.q0
+    QSetIterator<Node> i(*f);
+    while(i.hasNext())
+    {
+        Node node = i.next();
+        node.addRelation(nfa.q0, "@");
+    }
+
+    // Make this node's final states the concatentated final states.
+    f->clear();
+    f->unite(*nfa.f); // Done this way for memory management.
+    // NOTE: Initial state remains the same.
+}
+
+void Nfa::star()
+{
+    Node* newq0 = new Node("AG"); // AG: Auto generated.
+    newq0->addRelation(*q0, "@");
+
+    // Link all final states to q0.
+    QSetIterator<Node> i(*f);
+    while (i.hasNext())
+    {
+        Node node = i.next();
+        node.addRelation(q0, "@");
+    }
+
+    // Make newq0 the new q0
+    q0 = newq0;
+}
 
 /*void Nfa::debugPrintDelta()
 {

@@ -10,7 +10,7 @@
 #include <QSetIterator>
 #include <QHashIterator>
 
-#define VERBOSE 1
+#define VERBOSE 0
 #define FORWARDS 0
 #define BACKWARDS 1
 

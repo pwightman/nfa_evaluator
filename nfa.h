@@ -1,8 +1,6 @@
 #ifndef NFA_H
 #define NFA_H
 
-#define VERBOSE 1
-
 #include <QHash>
 #include <QSet>
 #include <QString>
@@ -13,23 +11,21 @@
 class Nfa
 {
 public:
+    // Nfa structure.
     Nfa();
-    void addTransition(Node& source, Node& destination, QString path);
+    void addTransition(Node& source, Node& destination, QString value);
     void makeInitial(Node& node);
     void makeFinal(Node& node);
-    bool isValidString(QString string, bool isParallel);
+    void unite(Nfa& nfa);
+    void concatenate(Nfa& nfa);
+    void star();
 
-    /*
-     * Prints a string that python can read in as its own native data structures
-     * (Used for testing)
-     */
-    QString toPyString();
+    // Nfa methods.
+    bool isValidString(QString string, bool isParallel);
 
 private:
     // Private member variables.
-    QSet<Node>* Q;
-    Node q0;
-    QSet<QString>* sigma;
+    Node* q0;
     QSet<Node>* f;
     // NOTE: Delta was removed because it's no longer needed.
 
