@@ -5,75 +5,125 @@
 #include "stdio.h"
 
 #include "nfa.h"
+#include "node.h"
+
+void debugPrintSet(QSet<Node>* set)
+{
+    QSetIterator<Node> i(*set);
+
+    printf("[ ");
+    while(i.hasNext())
+    {
+        Node node = i.next(); // Not doing it this way caused a weird const error.
+        printf("%s ", node.getName().toStdString().c_str());
+    }
+    printf("]\n");
+}
 
 int main()
 {
     // QCoreApplication a(argc, argv);
     // return a.exec();
-    /*QSet<QString>* Q = new QSet<QString>();
-    QString q0("");
-    QSet<QString>* sigma = new QSet<QString>();
-    QHash<QPair<QString, QString>, QSet<QString>*>* delta = new QHash<QPair<QString, QString>, QSet<QString>*>();
-    QSet<QString>* f = new QSet<QString>();
 
-    Q->insert(QString("S1"));
-    Q->insert(QString("S2"));
-    Q->insert(QString("S3"));
+    // Nfa* nfa = new Nfa();
+    Node* s1 = new Node("s1");
+    Node* s2 = new Node("s2");
+    Node* s3 = new Node("s3");
+    Node* s4 = new Node("s4");
+    Node* s5 = new Node("s4");
+    Node* s6 = new Node("s6");
+    s1->addRelation(*s3, "1");
+    s1->addRelation(*s4, "@");
+    s1->addRelation(*s6, "2");
+    s6->addRelation(*s2, "0");
+    s6->addRelation(*s2, "1");
+    s4->addRelation(*s2, "3");
+    s3->addRelation(*s2, "4");
+    s3->addRelation(*s4, "@");
+    s2->addRelation(*s1, "4");
+    s2->addRelation(*s5, "1");
+    s5->addRelation(*s1, "2");
+    s5->addRelation(*s3, "2");
+    s3->addRelation(*s5, "2");
 
-    q0 = QString("S1");
+    if (VERBOSE)
+    {
+        s1->debugPrint();
+        s3->debugPrint();
+        s4->debugPrint();
+        s6->debugPrint();
+        s2->debugPrint();
 
-    sigma->insert(QString("0"));
-    sigma->insert(QString("1"));
+        // Raw state tests...
 
-    f->insert(QString("S3"));
+        printf("Raw states of s1: ");
+        debugPrintSet(s1->rawStates(FORWARDS));
 
-    QPair<QString, QString> pair1;
-    QPair<QString, QString> pair2;
-    QPair<QString, QString> pair3;
-    QSet<QString>* set = new QSet<QString>();
+        printf("Backwards raw states of s4: ");
+        debugPrintSet(s4->rawStates(BACKWARDS));
 
-    pair1.first = QString("S1");
-    pair1.second = QString("@");
-    set->insert(QString("S2"));
-    set->insert(QString("S3"));
+        // Traversal tests...
 
-    delta->insert(pair1, set);
+        printf("Forward traversal set of node s5 on 2: ");
+        debugPrintSet(s5->traverseOn("2", FORWARDS));
 
-    pair2.first = QString("S2");
-    pair2.second = QString("1");
-    set = new QSet<QString>();
-    set->insert(QString("S3"));
+        printf("Backward traversal set of node s5 on 2: ");
+        debugPrintSet(s5->traverseOn("2", BACKWARDS));
 
-    delta->insert(pair2, set);
+        printf("Forward traversal set of node s5 on 6: ");
+        debugPrintSet(s5->traverseOn("6", FORWARDS));
+    }
 
-    pair3.first = QString("S3");
-    pair3.second = QString("0");
-    set = new QSet<QString>();
-    set->insert(QString("S2"));
+    // Use the same NFA as described above, but change the state names to be able
+    // to continue testing.
 
-    delta->insert(pair3, set);
-
-    Nfa* nfa = Nfa::createNfa(Q, q0, sigma, delta, f);
-
-    // Sequential test.
-    // QTime t, t2;
-    // t.start();
-    printf("0101 Valid: %s\n", nfa->isValidString(QString("0101"), false) == 1 ? "Yes" : "No");
-    printf("01010 Valid: %s\n", nfa->isValidString(QString("01010"), false) == 1 ? "Yes" : "No");
-    // printf("Linear run time: %d ms\n", t.elapsed());
-
-    // Parallel test.
-    // t2.start();
-    // printf("0101 Valid: %s\n", nfa->isValidString(QString("0101"), true) == 1 ? "Yes" : "No");
-    // printf("01010 Valid: %s\n", nfa->isValidString(QString("01010"), true) == 1 ? "Yes" : "No");
-    // printf("Parallel run time: %d ms\n", t2.elapsed());
-
-    delete Q;
-    delete sigma;
-    delete delta;
-    delete f;
-    delete nfa;*/
+    Node* s11 = new Node("s1");
+    Node* s12 = new Node("s2");
+    Node* s13 = new Node("s3");
+    Node* s14 = new Node("s4");
+    Node* s15 = new Node("s4");
+    Node* s16 = new Node("s6");
 
     Nfa* nfa = new Nfa();
+    nfa->addTransition(*s11, *s13, "1");
+    nfa->addTransition(*s11, *s14, "@");
+    nfa->addTransition(*s11, *s16, "2");
+    nfa->addTransition(*s16, *s12, "0");
+    nfa->addTransition(*s16, *s12, "1");
+    nfa->addTransition(*s14, *s12, "3");
+    nfa->addTransition(*s13, *s12, "4");
+    nfa->addTransition(*s13, *s14, "@");
+    nfa->addTransition(*s12, *s11, "4");
+    nfa->addTransition(*s12, *s15, "1");
+    nfa->addTransition(*s15, *s11, "2");
+    nfa->addTransition(*s15, *s13, "2");
+    nfa->addTransition(*s13, *s15, "2");
+    nfa->makeInitial(*s11);
+    nfa->makeFinal(*s12);
+    nfa->makeFinal(*s14);
 
+    // Completely new Nfa representing (a+b)b
+    /*Node* s21 = new Node("s1");
+    Node* s22 = new Node("s2");
+    Node* s23 = new Node("s3");
+    Node* s24 = new Node("s4");
+
+    Nfa* nfa1 = new Nfa();
+    nfa1->addTransition(*s21, *s22, "a");
+
+    Nfa* nfa2 = new Nfa();
+    nfa2->addTransition(*s23, *s24, "b");
+
+    // Union of a + b
+    nfa1->unite(*nfa2);
+
+    // Not quite clear how a concatenation would work here...
+    Node* s25 = new Node("s5");
+    Node* s26 = new Node("s6");
+    Nfa* nfa3 = new Nfa();
+    nfa3->addTransition(*s25, *s26, "b");
+
+    nfa1->concatenate(*nfa3);
+
+    // At this point Nfa1 should be (a+b)b...*/
 }

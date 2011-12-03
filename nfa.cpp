@@ -4,20 +4,67 @@
 
 Nfa::Nfa()
 {
-    Q = new QSet<QString>();
-    q0 = "";
-    sigma = new QSet<QString>();
-    delta = new QHash<QPair<QString, QString>, QSet<QString>*>();
-    reverseDelta =  new QHash<QPair<QString, QString>, QSet<QString>*>();
-    f = new QSet<QString>();
+    Node* q0 = new Node();
+    QSet<Node>* f = new QSet<Node>();
 }
 
-void Nfa::addTransition(QString source, QString destination, QString path)
+void Nfa::addTransition(Node& source, Node& destination, QString value)
 {
-
+    source.addRelation(destination, value);
 }
 
-void Nfa::debugPrintDelta()
+void Nfa::makeInitial(Node& node)
+{
+    q0 = &node;
+}
+
+void Nfa::makeFinal(Node& node)
+{
+    f->insert(node);
+}
+
+void Nfa::unite(Nfa& nfa)
+{
+    Node* newq0 = new Node("AG"); // AG: Auto generated.
+    newq0->addRelation(*q0, "@");
+    newq0->addRelation(*nfa.q0, "@");
+    q0 = newq0;
+}
+
+void Nfa::concatenate(Nfa& nfa)
+{
+    // Make all the final states transition to nfa.q0
+    QSetIterator<Node> i(*f);
+    while(i.hasNext())
+    {
+        Node node = i.next();
+        node.addRelation(*nfa.q0, "@");
+    }
+
+    // Make this node's final states the concatentated final states.
+    f->clear();
+    f->unite(*nfa.f); // Done this way for memory management.
+    // NOTE: Initial state remains the same.
+}
+
+void Nfa::star()
+{
+    Node* newq0 = new Node("AG"); // AG: Auto generated.
+    newq0->addRelation(*q0, "@");
+
+    // Link all final states to q0.
+    QSetIterator<Node> i(*f);
+    while (i.hasNext())
+    {
+        Node node = i.next();
+        node.addRelation(*q0, "@");
+    }
+
+    // Make newq0 the new q0
+    q0 = newq0;
+}
+
+/*void Nfa::debugPrintDelta()
 {
     QHashIterator<QPair<QString, QString>, QSet<QString>*> i(*delta);
     QPair<QString, QString> pair;
@@ -72,77 +119,63 @@ bool Nfa::isValidString(QString string, bool isParallel)
 QSet<QString>* Nfa::runNfa(QString string)
 {
   Traversal* trav = new Traversal(0, &q0);
-  return traverse(trav, &string);
+  QSet<Traversal*>* travs = setupInitials(trav);
+  return traverse(travs, &string);
 }
 
-QSet<QString>* Nfa::traverse(Traversal* trav, QString* str)
+QSet<Traversal*>* Nfa::setupInitials(Traversal* trav)
 {
-/*
+  QSet<Traversal*>* travs = new QSet<Traversal*>();
+  QPair<QString, QString> pair;
+  pair.first = *(trav->state());
+  pair.second = "@";
 
-Pseudo-code for interative nfa algorithm
-using this we should be able to parallelize using openMP
+  return travs->unite(*delta->value(pair));
+}
 
-accepts_string(str)
- return {run_nfa}.intersect(F) != empty_set
-
-run_nfa(str)
- q_set = {}
- q_set.add(q0)
- if ( (q0,eps) in delta_keys)
-   q_set.add(delta[q0,eps])
-
- new_set = {}
- for (int i = 0; i < str.length; i++)
-   new_set = {};
-   for q in q_set
-     if (q,str[i]) in delta_keys)
-       new_set.add(delta[q,string[i])
-     if (q,eps) in delta_keys
-       new_set.add(delta[q,eps])
-   q_set = new_set
-   if (q_set == empty)
-     return empty
-  return q_set
-
-  */
-    // debugPrintDelta();
-    QSet<QString>* qSet = new QSet<QString>();
-    qSet->insert(*(trav->state()));
-
+QSet<QString>* Nfa::traverse(QSet<Traversal*>* qSet, QString* str)
+{
+    // Special Case: Check to see if epsilon jump exists between initial state and another state
     QPair<QString, QString> pair;
     pair.first = *(trav->state());
     pair.second = QString("@");
-    // printf("key< %s %s >\n", pair.first.toStdString().c_str(), pair.second.toStdString().c_str());
 
+    // If there's an epsilon jump to any other states, jump
     if (delta->contains(pair))
     {
         qSet->unite(*delta->value(pair));
-        /*debugPrintSet(qSet);
-        printf("\n");*/
     }
 
+    // Represents all the states that you WILL be in, during the next iteration
     QSet<QString>* newSet = new QSet<QString>();;
     for (int i = 0; i < str->size(); i++)
     {
+        // Empty the new states (current states are kept in qSet)
         newSet->clear();
         QSetIterator<QString> j(*qSet);
+        while(j.hasNext())
         {
+            // Create a pair of State and transition
             pair.first = j.next();
             pair.second = (*str)[i];
+            // If the State-Transition pair has any matches, add them to the new set
             if (delta->contains(pair))
             {
                 newSet->unite(*delta->value(pair));
             }
 
+            // Check for epsilon jumps, add them to the new set
             pair.second = QString("@");
             if (delta->contains(pair))
             {
                 newSet->unite(*delta->value(pair));
             }
-
+            
+            // newSet becomes current set (qSet) for the next iteration
             qSet->clear();
             qSet->unite(*newSet); // Done this way for memory management.
 
+            // If all the transitions leave the NFA, no matches, you're done
             if (qSet->count() == 0)
             {
                 return qSet;
@@ -150,20 +183,13 @@ run_nfa(str)
         }
     }
 
-    /*debugPrintSet(qSet);
-    printf("\n");*/
-    // printf("%d\n", qSet->intersect(*f).count() > 0);
+    // Congrats! There were matches!
     delete newSet;
     return qSet;
 
-}
+}*/
 
-QList<Traversal*>* Nfa::step(Traversal* trav, QString* str)
-{
-  return new QList<Traversal*>();
-}
-
-QSet<QString>* Nfa::runNfaP(QString string)
+/*QSet<QString>* Nfa::runNfaP(QString string)
 {
     // debugPrintDelta();
     QSet<QString>* qSet = new QSet<QString>();
@@ -187,6 +213,7 @@ QSet<QString>* Nfa::runNfaP(QString string)
     {
         newSet->clear();
         QSetIterator<QString> j(*qSet);
+        while(j.hasNext())
         {
             pair.first = j.next();
             pair.second = string[i];
@@ -214,5 +241,4 @@ QSet<QString>* Nfa::runNfaP(QString string)
     //debugPrintSet(qSet);
     //printf("\n");
     return qSet;
-}
-
+}*/
