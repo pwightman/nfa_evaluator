@@ -23,7 +23,7 @@ QString Node::getName()
 
 void Node::addRelation(Node& destination, QString value)
 {
-    printf("Checking to see if %s is in the hash.\n", value.toStdString().c_str());
+    printf("Checking to see if %s is in the hash of node %s.\n", value.toStdString().c_str(), destination.getName().toStdString().c_str());
     // Add forward traversal relation.
     if (connections->contains(value))
     {
