@@ -37,7 +37,8 @@ private:
     QHash<QPair<QString, QString>, QSet<QString>*>* reverseDelta;
     QSet<QString>* f;
 
-    QSet<QString>* traverse(Traversal* traversal, QString* str);
+    QSet<QString>* traverse(QSet<Traversal*>* traversal, QString* str);
+    QSet<Traversal*>* setupInitials(Traversal* trav);
 
     // Private methods.
     void debugPrintDelta();
