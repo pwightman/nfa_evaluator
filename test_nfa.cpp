@@ -6,8 +6,9 @@
 #include <iostream>
 #include "nfa.h"
 
+
 /* Please update this as you add tests */
-int NUM_TESTS = 1;
+int NUM_TESTS = 4;
 
 /* Used to specify granularity of testing */
 typedef enum {
@@ -44,12 +45,107 @@ const char* testTypeStr(TestType type)
  * Defines the NFA: even 1's and 0's (?)
  */
 
+/* Forward declarations */
+Nfa* nfa_1();
+Nfa* nfa_2();
+Nfa* nfa_3();
+Nfa* nfa_4();
+/* End forward declarations */
+
+
+/*
+ * uses nfa_2
+ */
+void test_nfa_4(TestType type)
+{
+  qsrand(NULL);
+  Nfa* nfa = nfa_2();  
+  QString str = "0";
+
+  for(int i = 0; i < 1000000; i++)
+    str += (rand() % 2 == 1 ? "1" : "0");
+
+  printf("\nBegin stress test...\n");
+  assert_nfa(nfa, str, true, type);
+}
+
+/*
+ * (1 + 0)
+ */
+Nfa* nfa_3()
+{
+  Nfa* nfa1 = new Nfa();
+  Node* s1 = new Node("s1");
+  Node* s2 = new Node("s2");
+
+  nfa1->addTransition(*s1, *s2, "0");
+  nfa1->makeInitial(*s1);
+  nfa1->makeFinal(*s2);
+
+  Nfa* nfa2 = new Nfa();
+  Node* s3 = new Node("s3");
+  Node* s4 = new Node("s4");
+  nfa2->addTransition(*s3, *s4, "1");
+  nfa2->makeInitial(*s3);
+  nfa2->makeFinal(*s4);
+
+  nfa1->unite(*nfa2);
+
+  return nfa1;
+}
+
+void test_nfa_3(TestType type)
+{
+  Nfa* nfa = nfa_3();
+  assert_nfa(nfa, "@", false, type);
+  assert_nfa(nfa, "1", true, type);
+  assert_nfa(nfa, "0", true, type);
+  assert_nfa(nfa, "2", false, type);
+  assert_nfa(nfa, "00", false, type);
+  assert_nfa(nfa, "10", false, type);
+  assert_nfa(nfa, "01", false, type);
+  assert_nfa(nfa, "11", false, type);
+}
+/*
+ * (0 + 1)*
+ */
+Nfa* nfa_2()
+{
+  Nfa* nfa = new Nfa();
+  Node* s1 = new Node("s1");
+  Node* s2 = new Node("s2");
+  Node* s3 = new Node("s3");
+
+  nfa->addTransition(*s1, *s2, "0");
+  nfa->addTransition(*s1, *s3, "1");
+  nfa->addTransition(*s2, *s1, "@");
+  nfa->addTransition(*s3, *s1, "@");
+  nfa->makeInitial(*s1);
+  nfa->makeFinal(*s1);
+
+  return nfa;
+}
+
+void test_nfa_2(TestType type)
+{
+  Nfa* nfa = nfa_2();
+  assert_nfa(nfa, "1", true, type);
+  assert_nfa(nfa, "0", true, type);
+  assert_nfa(nfa, "10", true, type);
+  assert_nfa(nfa, "01", true, type);
+  assert_nfa(nfa, "11110", true, type);
+  assert_nfa(nfa, "00111010100011", true, type);
+  assert_nfa(nfa, "00111210100011", false, type);
+  assert_nfa(nfa, "@", true, type);
+}
+
 Nfa* nfa_1()
 {
   Nfa* nfa = new Nfa();
   Node* s1 = new Node("s1");
   Node* s2 = new Node("s2");
   nfa->addTransition(*s1, *s2, "1");
+  nfa->addTransition(*s2, *s1, "0");
   nfa->makeInitial(*s1);
   nfa->makeFinal(*s2);
 
@@ -60,8 +156,12 @@ Nfa* nfa_1()
 void test_nfa_1(TestType type)
 {
   Nfa* nfa = nfa_1();
-  assert_nfa(nfa, "0101", true, type);
-  assert_nfa(nfa, "01010", false, type);
+  assert_nfa(nfa, "1", true, type);
+  assert_nfa(nfa, "10", false, type);
+  assert_nfa(nfa, "11", false, type);
+  assert_nfa(nfa, "101", true, type);
+  assert_nfa(nfa, "101010101010101010101", true, type);
+  assert_nfa(nfa, "101010101011101010101", false, type);
 }
 
 /*
@@ -92,7 +192,10 @@ void assert_nfa(Nfa* nfa, QString str, bool expected, TestType type)
   for(int i = 0; i < results.size(); i++)
   {
     if(results[i].first)
-      printf("PASSED: %s, %s\n", str.toStdString().c_str(), testTypeStr(results[i].second));
+    {
+      //printf("PASSED: %s, %s\n", str.toStdString().c_str(), testTypeStr(results[i].second));
+      printf(".");
+    }
     else
     {
       printf("FAILED: %s\n", str.toStdString().c_str());
@@ -125,12 +228,23 @@ void assert_nfa(Nfa* nfa, QString str, bool expected, TestType type)
  */
 void test_nfa(int num, TestType type)
 {
+  printf("TESTING NFA %d\n=====================\n\n", num);
   switch(num)
   {
     case 1:
       test_nfa_1(type);
       break;
+    case 2:
+      test_nfa_2(type);
+      break;
+    case 3:
+      test_nfa_3(type);
+      break;
+    case 4:
+      test_nfa_4(type);
+      break;
   }
+  printf("\n\n");
 }
 
 /*
@@ -150,5 +264,6 @@ void test_all(TestType type)
 int main()
 {
   test_all(TestTypeSequential);
+  printf("\n");
 }
 

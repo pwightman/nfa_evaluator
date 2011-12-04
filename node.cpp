@@ -3,14 +3,14 @@
 
 Node::Node()
 {
-    connections = new QHash<QString, QSet<Node>*>();
-    reverseConnections = new QHash<QString, QSet<Node>*>();
+    connections = new QHash<QString, QSet<Node*>*>();
+    reverseConnections = new QHash<QString, QSet<Node*>*>();
 }
 
 Node::Node(QString name)
 {
-    connections = new QHash<QString, QSet<Node>*>();
-    reverseConnections = new QHash<QString, QSet<Node>*>();
+    connections = new QHash<QString, QSet<Node*>*>();
+    reverseConnections = new QHash<QString, QSet<Node*>*>();
     this->name = name;
 }
 
@@ -19,9 +19,9 @@ QString Node::getName()
     return name;
 }
 
-QHash<QString, QSet<Node>*>* Node::getHash(int direction)
+QHash<QString, QSet<Node*>*>* Node::getHash(int direction)
 {
-    QHash<QString, QSet<Node>*>* links;
+    QHash<QString, QSet<Node*>*>* links;
     if (direction == FORWARDS)
     {
         links = connections;
@@ -41,9 +41,9 @@ QHash<QString, QSet<Node>*>* Node::getHash(int direction)
     return links;
 }
 
-QSet<Node>* Node::rawStates(int direction)
+QSet<Node*>* Node::rawStates(int direction)
 {
-    QHash<QString, QSet<Node>*>* links = getHash(direction);
+    QHash<QString, QSet<Node*>*>* links = getHash(direction);
     if (links == NULL)
     {
         // If an incorrect direction was passed in, then return an empty set.
@@ -51,12 +51,12 @@ QSet<Node>* Node::rawStates(int direction)
         {
             printf("Incorrect direction passed into rawStates\n");
         }
-        return new QSet<Node>();
+        return new QSet<Node*>();
     }
 
     // Create a set with this node.
-    QSet<Node>* states = new QSet<Node>();
-    states->insert(*this);
+    QSet<Node*>* states = new QSet<Node*>();
+    states->insert(this);
 
     // If there are epsilon jumps, add them to the set.
     if (links->contains("@"))
@@ -68,9 +68,17 @@ QSet<Node>* Node::rawStates(int direction)
     return states;
 }
 
-QSet<Node>* Node::traverseOn(QString value, int direction)
+QSet<Node*>* Node::traverseOn(QString value, int direction)
 {
-    QHash<QString, QSet<Node>*>* links = getHash(direction);
+    /* If they're checking for epsilon, just return yourself */
+    if (value == "@")
+    {
+      QSet<Node*>* set = new QSet<Node*>();
+      set->insert(this);
+      return set;
+    }
+
+    QHash<QString, QSet<Node*>*>* links = getHash(direction);
 
     if (links == NULL)
     {
@@ -83,12 +91,15 @@ QSet<Node>* Node::traverseOn(QString value, int direction)
     }
 
     // Create an empty set.
-    QSet<Node>* states = new QSet<Node>();
+    QSet<Node*>* states = new QSet<Node*>();
 
     // If there are traversals on the value, then add them to the set.
     if (links->contains(value))
     {
         states->unite(*links->value(value));
+        QMutableSetIterator<Node*> i(*states);
+        while(i.hasNext())
+          states->unite(*(i.next()->rawStates(direction)));
     }
 
     // Return the set.
@@ -104,8 +115,8 @@ void Node::addRelation(Node& destination, QString value)
     // Add forward traversal relation.
     if (connections->contains(value))
     {
-        QSet<Node>* set = connections->value(value);
-        set->insert(destination);
+        QSet<Node*>* set = connections->value(value);
+        set->insert(&destination);
     }
     else
     {
@@ -113,21 +124,21 @@ void Node::addRelation(Node& destination, QString value)
         {
             printf("%s wasn't found in the hash, so creating a new entry.\n", value.toStdString().c_str());
         }
-        QSet<Node>* set = new QSet<Node>();
-        set->insert(destination);
+        QSet<Node*>* set = new QSet<Node*>();
+        set->insert(&destination);
         connections->insert(value, set);
     }
 
     // Add backward traversal relation.
     if (destination.reverseConnections->contains(value))
     {
-        QSet<Node>* set = destination.reverseConnections->value(value);
-        set->insert(*this);
+        QSet<Node*>* set = destination.reverseConnections->value(value);
+        set->insert(this);
     }
     else
     {
-        QSet<Node>* set = new QSet<Node>();
-        set->insert(*this);
+        QSet<Node*>* set = new QSet<Node*>();
+        set->insert(this);
         destination.reverseConnections->insert(value, set);
     }
     if (VERBOSE && name != "")
@@ -144,34 +155,34 @@ void Node::debugPrint()
         return;
     }
 
-    QHashIterator<QString, QSet<Node>*> i(*connections);
+    QHashIterator<QString, QSet<Node*>*> i(*connections);
     while(i.hasNext())
     {
         i.next();
         QString string = i.key();
-        QSet<Node>* set = i.value();
+        QSet<Node*>* set = i.value();
         printf("%s FORWARD ON %s -> [ ", this->name.toStdString().c_str(), string.toStdString().c_str());
 
-        QSetIterator<Node> j(*set);
+        QSetIterator<Node*> j(*set);
         while (j.hasNext())
         {
-            printf("%s ", j.next().name.toStdString().c_str());
+            printf("%s ", j.next()->name.toStdString().c_str());
         }
         printf("]\n");
     }
 
-    QHashIterator<QString, QSet<Node>*> i2(*reverseConnections);
+    QHashIterator<QString, QSet<Node*>*> i2(*reverseConnections);
     while(i2.hasNext())
     {
         i2.next();
         QString string2 = i2.key();
-        QSet<Node>* set2 = i2.value();
+        QSet<Node*>* set2 = i2.value();
         printf("%s BACKWARD ON %s -> [ ", this->name.toStdString().c_str(), string2.toStdString().c_str());
 
-        QSetIterator<Node> j2(*set2);
+        QSetIterator<Node*> j2(*set2);
         while (j2.hasNext())
         {
-            printf("%s ", j2.next().name.toStdString().c_str());
+            printf("%s ", j2.next()->name.toStdString().c_str());
         }
         printf("]\n");
     }
@@ -184,5 +195,5 @@ static int qHash(const Node& node)
 
 bool Node::operator==(const Node &other) const
 {
-    return connections == other.connections && reverseConnections == other.reverseConnections;
+    return this == &other;
 }

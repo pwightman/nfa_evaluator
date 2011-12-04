@@ -7,15 +7,15 @@
 #include "nfa.h"
 #include "node.h"
 
-void debugPrintSet(QSet<Node>* set)
+void debugPrintSet(QSet<Node*>* set)
 {
-    QSetIterator<Node> i(*set);
+    QSetIterator<Node*> i(*set);
 
     printf("[ ");
     while(i.hasNext())
     {
-        Node node = i.next(); // Not doing it this way caused a weird const error.
-        printf("%s ", node.getName().toStdString().c_str());
+        Node* node = i.next(); // Not doing it this way caused a weird const error.
+        printf("%s ", node->getName().toStdString().c_str());
     }
     printf("]\n");
 }
@@ -129,16 +129,16 @@ int main()
     test_nfa->makeFinal(*test_s2);
     test_s1->debugPrint();
 
-    QSet<Node>* results = test_nfa->runNfa("1");
+    QSet<Node*>* results = test_nfa->runNfa("1");
 
     printf("Nodes left: %d\n", results->size());
 
-    printf("Was valid: %s\n", ( test_nfa->isValidString("1", false) ? "YES" : "NO"));
-    printf("Was valid: %s\n", ( test_nfa->isValidString("10", false) ? "YES" : "NO"));
+    printf("Was valid: %s should be YES\n", ( test_nfa->isValidString("1", false) ? "YES" : "NO"));
+    printf("Was valid: %s should be NO\n", ( test_nfa->isValidString("10", false) ? "YES" : "NO"));
 
-    //printf("Was valid: %s\n", ( test_nfa->isValidString("101010101010", false) ? "YES" : "NO"));
-    //printf("Was valid: %s\n", ( test_nfa->isValidString("1101010101010", false) ? "YES" : "NO"));
-    //printf("Was valid: %s\n", ( test_nfa->isValidString("1010101010101", false) ? "YES" : "NO"));
+    printf("Was valid: %s should be NO\n", ( test_nfa->isValidString("101010101010", false) ? "YES" : "NO"));
+    printf("Was valid: %s should be NO\n", ( test_nfa->isValidString("1101010101010", false) ? "YES" : "NO"));
+    printf("Was valid: %s should be YES\n", ( test_nfa->isValidString("1010101010101", false) ? "YES" : "NO"));
 
     // Completely new Nfa representing (a+b)b
     /*Node* s21 = new Node("s1");

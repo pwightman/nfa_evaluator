@@ -37,13 +37,13 @@ public:
     /*
      * rawStates returns a set of nodes, which includes itself, and all the epsilon jumps.
      */
-    QSet<Node>* rawStates(int direction); // Set of all states after e-closure.
+    QSet<Node*>* rawStates(int direction); // Set of all states after e-closure.
 
     /*
      * traverseOn returns a set of nodes based off of the traversal of a given value.  
      * Note that rawStates slightly does this, but includes itself, where traverseOn doesn't.
      */
-    QSet<Node>* traverseOn(QString value, int direction);
+    QSet<Node*>* traverseOn(QString value, int direction);
 
     /*
      * Steps only this node based on the value passed in. Does not account for epsilon jumps
@@ -68,13 +68,13 @@ public:
 
 private:
     /* Paths that lead away from this node to other nodes */
-    QHash<QString, QSet<Node>*>* connections;
+    QHash<QString, QSet<Node*>*>* connections;
     /* Paths that lead to this node from other nodes */
-    QHash<QString, QSet<Node>*>* reverseConnections;
+    QHash<QString, QSet<Node*>*>* reverseConnections;
     QString name; // Optional parameter in constructor.
 
     // Helper methods.
-    QHash<QString, QSet<Node>*>* getHash(int direction);
+    QHash<QString, QSet<Node*>*>* getHash(int direction);
 };
 
 #endif // NODE_H

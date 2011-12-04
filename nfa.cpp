@@ -6,7 +6,7 @@
 Nfa::Nfa()
 {
     q0 = new Node();
-    f = new QSet<Node>();
+    f = new QSet<Node*>();
 }
 
 void Nfa::addTransition(Node& source, Node& destination, QString value)
@@ -31,7 +31,7 @@ void Nfa::makeInitial(Node& node)
 
 void Nfa::makeFinal(Node& node)
 {
-    this->f->insert(node);
+    f->insert(&node);
 }
 
 void Nfa::unite(Nfa& nfa)
@@ -39,17 +39,19 @@ void Nfa::unite(Nfa& nfa)
     Node* newq0 = new Node("AG"); // AG: Auto generated.
     newq0->addRelation(*q0, "@");
     newq0->addRelation(*nfa.q0, "@");
-    q0 = newq0;
+    /* combine the final states of both nfa's into this nfa */
+    f->unite(*nfa.f);
+    makeInitial(*newq0);
 }
 
 void Nfa::concatenate(Nfa& nfa)
 {
     // Make all the final states transition to nfa.q0
-    QSetIterator<Node> i(*f);
+    QSetIterator<Node*> i(*f);
     while(i.hasNext())
     {
-        Node node = i.next();
-        node.addRelation(*nfa.q0, "@");
+        Node* node = i.next();
+        node->addRelation(*nfa.q0, "@");
     }
 
     // Make this node's final states the concatentated final states.
@@ -64,11 +66,11 @@ void Nfa::star()
     newq0->addRelation(*q0, "@");
 
     // Link all final states to q0.
-    QSetIterator<Node> i(*f);
+    QSetIterator<Node*> i(*f);
     while (i.hasNext())
     {
-        Node node = i.next();
-        node.addRelation(*q0, "@");
+        Node* node = i.next();
+        node->addRelation(*q0, "@");
     }
 
     // Make newq0 the new q0
@@ -107,15 +109,14 @@ void Nfa::debugPrintSet(QSet<QString>* set)
 }
 */
 
-void printSet(QSet<Node>* set)
+void printSet(QSet<Node*>* set)
 {
-    QSetIterator<Node> i(*set);
-    Node node;
+    QSetIterator<Node*> i(*set);
+    Node* node;
     while(i.hasNext())
     {
         node = i.next();
-        node.debugPrint();
-        printf("MEM: %ul\n", (unsigned long)&node);
+        node->debugPrint();
     }
 }
 
@@ -142,47 +143,44 @@ bool Nfa::isValidString(QString string, bool isParallel)
         finalStates = runNfa(string);
     }
     */
-    QSet<Node>* endingStates = runNfa(string);
-    printf("Testing %s", string.toStdString().c_str());
-    printf("\nENDING:\n");
-    printSet(endingStates);
-    printf("\nFINAL:\n");
-    printSet(f);
-    printf("\nINTERSECT:\n");
-    printSet(&(endingStates->intersect(*f)));
+    QSet<Node*>* endingStates = runNfa(string);
+    endingStates->intersect(*f);
     bool intersects = endingStates->count() > 0;
-    printf("\nBOOL:\n");
-    printf("%d\n", intersects);
     delete endingStates; // Remove memory allocated for finalStates.
     return intersects;
 }
 
 
-QSet<Node>* Nfa::runNfa(QString string)
+QSet<Node*>* Nfa::runNfa(QString string)
 {
-  //Traversal* trav = new Traversal(0, q0);
-  //QSet<Node>* travs = 
-  //travs.insert(trav);
   return traverse(q0, &string, FORWARDS);
 }
 
 
-QSet<Node>* Nfa::traverse(Node* node, QString* str, int direction)
+QSet<Node*>* Nfa::traverse(Node* node, QString* str, int direction)
 {
-    QSet<Node>* qSet = node->rawStates(direction);
-    QPair<Node, QString> pair;
+    QSet<Node*>* qSet = node->rawStates(direction);
+    QPair<Node*, QString> pair;
 
     // Represents all the states that you ARE GOING TO be in, during the next iteration
-    QSet<Node>* newSet = new QSet<Node>();;
+    QSet<Node*>* newSet = new QSet<Node*>();;
     for (int i = 0; i < str->size(); i++)
     {
         // Empty the new states (current states are kept in qSet)
         newSet->clear();
-        QSetIterator<Node> j(*qSet);
+        QSetIterator<Node*> j(*qSet);
         while(j.hasNext())
         {
             QString subStr((*str).at(i));
-            newSet->unite(*(((Node)j.next()).traverseOn(subStr, direction)));
+            newSet->unite(*(((Node*)j.next())->traverseOn(subStr, direction)));
+        }
+
+        if(VERBOSE)
+        {
+          printf("qSet:\n");
+          printSet(qSet);
+          printf("newSet:\n");
+          printSet(newSet);
         }
 
         qSet->clear();
@@ -192,6 +190,7 @@ QSet<Node>* Nfa::traverse(Node* node, QString* str, int direction)
         {
             return qSet;
         }
+
     }
 
     // Congrats! There were matches!

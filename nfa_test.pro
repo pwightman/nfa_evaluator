@@ -20,9 +20,11 @@ mac {
 TEMPLATE = app
 
 SOURCES += test_nfa.cpp \
+    node.cpp \
     nfa.cpp
 
 HEADERS += \
+    node.h \
     nfa.h
 
 QMAKE_CXXFLAGS += -fopenmp

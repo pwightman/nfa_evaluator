@@ -22,7 +22,7 @@ public:
     void* finals();
     void* initial();
 
-    QSet<Node>* runNfa(QString string);
+    QSet<Node*>* runNfa(QString string);
 
     // Nfa methods.
     bool isValidString(QString string, bool isParallel);
@@ -30,8 +30,8 @@ public:
 private:
     // Private member variables.
     Node* q0;
-    QSet<Node>* f;
-    QSet<Node>* traverse(Node* node, QString* str, int direction);
+    QSet<Node*>* f;
+    QSet<Node*>* traverse(Node* node, QString* str, int direction);
     // NOTE: Delta was removed because it's no longer needed.
 
 
