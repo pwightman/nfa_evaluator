@@ -110,9 +110,11 @@ void Nfa::debugPrintSet(QSet<QString>* set)
 void printSet(QSet<Node>* set)
 {
   QSetIterator<Node> i(*set);
+  Node* node;
   while(i.hasNext())
   {
-    ((Node)i.next()).debugPrint();
+    (node = &((Node)i.next()))->debugPrint();
+    printf("MEM: %d\n", (long)node);
   }
 }
 
@@ -140,11 +142,14 @@ bool Nfa::isValidString(QString string, bool isParallel)
     }
     */
     QSet<Node>* endingStates = runNfa(string);
+    printf("Testing %s", string.toStdString().c_str());
     printf("\nENDING:\n");
     printSet(endingStates);
     printf("\nFINAL:\n");
     printSet(f);
-    bool intersects = endingStates->intersect(*f).count() > 0;
+    printf("\nINTERSECT:\n");
+    printSet(&(endingStates->intersect(*f)));
+    bool intersects = endingStates->count() > 0;
     printf("\nBOOL:\n");
     printf("%d\n", intersects);
     delete endingStates; // Remove memory allocated for finalStates.

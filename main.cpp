@@ -118,7 +118,11 @@ int main()
 
     Nfa* test_nfa = new Nfa();
     Node* test_s1 = new Node("s1");
+    printf("test_s1 MEM: %d\n", (long)test_s1);
+
     Node* test_s2 = new Node("s2");
+    printf("test_s2 MEM: %d\n", (long)test_s2);
+
     test_nfa->addTransition(*test_s1, *test_s2, "1");
     test_nfa->addTransition(*test_s2, *test_s1, "0");
     test_nfa->makeInitial(*test_s1);
@@ -131,9 +135,10 @@ int main()
 
     printf("Was valid: %s\n", ( test_nfa->isValidString("1", false) ? "YES" : "NO"));
     printf("Was valid: %s\n", ( test_nfa->isValidString("10", false) ? "YES" : "NO"));
-    printf("Was valid: %s\n", ( test_nfa->isValidString("101010101010", false) ? "YES" : "NO"));
-    printf("Was valid: %s\n", ( test_nfa->isValidString("1101010101010", false) ? "YES" : "NO"));
-    printf("Was valid: %s\n", ( test_nfa->isValidString("1010101010101", false) ? "YES" : "NO"));
+
+    //printf("Was valid: %s\n", ( test_nfa->isValidString("101010101010", false) ? "YES" : "NO"));
+    //printf("Was valid: %s\n", ( test_nfa->isValidString("1101010101010", false) ? "YES" : "NO"));
+    //printf("Was valid: %s\n", ( test_nfa->isValidString("1010101010101", false) ? "YES" : "NO"));
 
     // Completely new Nfa representing (a+b)b
     /*Node* s21 = new Node("s1");
