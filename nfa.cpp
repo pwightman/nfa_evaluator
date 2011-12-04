@@ -105,11 +105,22 @@ void Nfa::debugPrintSet(QSet<QString>* set)
     }
     printf("}");
 }
+*/
+
+void printSet(QSet<Node>* set)
+{
+  QSetIterator<Node> i(*set);
+  while(i.hasNext())
+  {
+    ((Node)i.next()).debugPrint();
+  }
+}
 
 bool Nfa::isValidString(QString string, bool isParallel)
 {
     // Save the set from running runNfa into a variable so that it can
     // be properly deleted.
+    /*
     QSet<QString>* finalStates;
     if (isParallel)
     {
@@ -127,12 +138,19 @@ bool Nfa::isValidString(QString string, bool isParallel)
         }
         finalStates = runNfa(string);
     }
-    bool intersects = finalStates->intersect(*f).count() > 0;
-    delete finalStates; // Remove memory allocated for finalStates.
+    */
+    QSet<Node>* endingStates = runNfa(string);
+    printf("\nENDING:\n");
+    printSet(endingStates);
+    printf("\nFINAL:\n");
+    printSet(f);
+    bool intersects = endingStates->intersect(*f).count() > 0;
+    printf("\nBOOL:\n");
+    printf("%d\n", intersects);
+    delete endingStates; // Remove memory allocated for finalStates.
     return intersects;
 }
 
-*/
 
 QSet<Node>* Nfa::runNfa(QString string)
 {
@@ -148,19 +166,6 @@ QSet<Node>* Nfa::traverse(Node* node, QString* str, int direction)
     QSet<Node>* qSet = node->rawStates(direction);
     QPair<Node, QString> pair;
 
-    /* NOTE: No longer necessary when using rawStates
-    // Special Case: Check to see if epsilon jump exists between initial state and another state
-    QPair<Node, QString> pair;
-    pair.first = *state;
-    pair.second = QString("@");
-
-    // If there's an epsilon jump to any other states, jump
-    if (delta->contains(pair))
-    {
-        qSet->unite(*delta->value(pair));
-    }
-    */
-
     // Represents all the states that you ARE GOING TO be in, during the next iteration
     QSet<Node>* newSet = new QSet<Node>();;
     for (int i = 0; i < str->size(); i++)
@@ -170,42 +175,10 @@ QSet<Node>* Nfa::traverse(Node* node, QString* str, int direction)
         QSetIterator<Node> j(*qSet);
         while(j.hasNext())
         {
-            // Create a pair of State and transition
-            /*
-            pair.first = j.next();
-            pair.second = (*str)[i];
-            // If the State-Transition pair has any matches, add them to the new set
-            if (delta->contains(pair))
-            {
-                newSet->unite(*delta->value(pair));
-            }
-            */
             QString subStr((*str).at(i));
             newSet->unite(*(((Node)j.next()).traverseOn(subStr, direction)));
-
-            /*
-            // Check for epsilon jumps, add them to the new set
-            pair.second = "@";
-            if (delta->contains(pair))
-            {
-                newSet->unite(*delta->value(pair));
-            }
-            */
-            // newSet becomes current set (qSet) for the next iteration
-
-            // If all the transitions leave the NFA, no matches, you're done
         }
 
-        QSetIterator<Node> k(*qSet);
-        printf("uniting:\n");
-        while(k.hasNext())
-          printf("\t%s\n", ((Node)k.next()).getName().toStdString().c_str());
-
-        QSetIterator<Node> l(*newSet);
-        printf("with:\n");
-        while(l.hasNext())
-          printf("\t%s\n", ((Node)l.next()).getName().toStdString().c_str());
-        
         qSet->clear();
         qSet->unite(*newSet); // Done this way for memory management.
 
@@ -213,8 +186,6 @@ QSet<Node>* Nfa::traverse(Node* node, QString* str, int direction)
         {
             return qSet;
         }
-            
-        
     }
 
     // Congrats! There were matches!

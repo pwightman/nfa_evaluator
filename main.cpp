@@ -119,14 +119,21 @@ int main()
     Nfa* test_nfa = new Nfa();
     Node* test_s1 = new Node("s1");
     Node* test_s2 = new Node("s2");
-    nfa->addTransition(*test_s1, *test_s2, "1");
-    nfa->makeInitial(*test_s1);
-    nfa->makeFinal(*test_s2);
+    test_nfa->addTransition(*test_s1, *test_s2, "1");
+    test_nfa->addTransition(*test_s2, *test_s1, "0");
+    test_nfa->makeInitial(*test_s1);
+    test_nfa->makeFinal(*test_s2);
     test_s1->debugPrint();
 
     QSet<Node>* results = test_nfa->runNfa("1");
 
     printf("Nodes left: %d\n", results->size());
+
+    printf("Was valid: %s\n", ( test_nfa->isValidString("1", false) ? "YES" : "NO"));
+    printf("Was valid: %s\n", ( test_nfa->isValidString("10", false) ? "YES" : "NO"));
+    printf("Was valid: %s\n", ( test_nfa->isValidString("101010101010", false) ? "YES" : "NO"));
+    printf("Was valid: %s\n", ( test_nfa->isValidString("1101010101010", false) ? "YES" : "NO"));
+    printf("Was valid: %s\n", ( test_nfa->isValidString("1010101010101", false) ? "YES" : "NO"));
 
     // Completely new Nfa representing (a+b)b
     /*Node* s21 = new Node("s1");
