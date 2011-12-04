@@ -82,11 +82,12 @@ void Nfa::star()
     while (i.hasNext())
     {
         Node* node = i.next();
-        node->addRelation(*newq0, "@");
+        node->addRelation(*q0, "@");
     }
 
     // Make newq0 the new q0
     makeInitial(*newq0);
+    // Accept epsilon
     makeFinal(*newq0);
 }
 

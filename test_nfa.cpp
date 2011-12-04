@@ -8,7 +8,7 @@
 
 
 /* Please update this as you add tests */
-int NUM_TESTS = 7;
+int NUM_TESTS = 9;
 
 /* Used to specify granularity of testing */
 typedef enum {
@@ -55,6 +55,85 @@ Nfa* nfa_6();
 Nfa* nfa_7();
 /* End forward declarations */
 
+/* cat star test 
+   (01)*
+*/
+Nfa* nfa_9()
+{
+  Nfa* nfa1 = new Nfa();
+  Node* s1 = new Node("s1");
+  Node* s2 = new Node("s2");
+
+  Nfa* nfa2 = new Nfa();
+  Node* s3 = new Node("s3");
+  Node* s4 = new Node("s4");
+
+  nfa1->addTransition(*s1, *s2, "0");
+  nfa1->makeInitial(*s1);
+  nfa1->makeFinal(*s2);
+
+  nfa2->addTransition(*s3, *s4, "1");
+  nfa2->makeInitial(*s3);
+  nfa2->makeFinal(*s4);
+
+  nfa1->concatenate(*nfa2);
+  nfa1->star();
+  
+return nfa1;
+}
+
+void test_nfa_9(TestType type)
+{
+  Nfa* nfa = nfa_9();
+  assert_nfa(nfa, "@",          true,  type);
+  assert_nfa(nfa, "1",          false, type);
+  assert_nfa(nfa, "0",          false, type);
+  assert_nfa(nfa, "01",         true,  type);
+  assert_nfa(nfa, "0101",       true,  type);
+  assert_nfa(nfa, "1110",       false, type);
+  assert_nfa(nfa, "010101",     true,  type);
+  assert_nfa(nfa, "0101010101", true,  type);
+}
+
+/* cat test 
+   (01)
+*/
+Nfa* nfa_8()
+{
+  Nfa* nfa1 = new Nfa();
+  Node* s1 = new Node("s1");
+  Node* s2 = new Node("s2");
+
+  Nfa* nfa2 = new Nfa();
+  Node* s3 = new Node("s3");
+  Node* s4 = new Node("s4");
+
+  nfa1->addTransition(*s1, *s2, "0");
+  nfa1->makeInitial(*s1);
+  nfa1->makeFinal(*s2);
+
+  nfa2->addTransition(*s3, *s4, "1");
+  nfa2->makeInitial(*s3);
+  nfa2->makeFinal(*s4);
+
+  nfa1->concatenate(*nfa2);
+
+  return nfa1;
+}
+
+void test_nfa_8(TestType type)
+{
+  Nfa* nfa = nfa_8();
+  assert_nfa(nfa, "@",          false, type);
+  assert_nfa(nfa, "1",          false, type);
+  assert_nfa(nfa, "0",          false, type);
+  assert_nfa(nfa, "01",         true,  type);
+  assert_nfa(nfa, "0101",       false, type);
+  assert_nfa(nfa, "1110",       false, type);
+  assert_nfa(nfa, "010101",     false, type);
+  assert_nfa(nfa, "0101010101", false, type);
+}
+
 /* star test 
    1*
 */
@@ -97,7 +176,7 @@ Nfa* nfa_6()
   Node* s3 = new Node("s3");
 
   nfa->addTransition(*s1, *s2, "0");
-  nfa->addTransition(*s1, *s2, "1");
+  nfa->addTransition(*s2, *s3, "1");
   nfa->makeInitial(*s1);
   nfa->makeFinal(*s3);
 
@@ -334,7 +413,7 @@ void test_nfa(int num, TestType type)
       test_nfa_3(type);
       break;
     case 4:
-      test_nfa_4(type);
+      //test_nfa_4(type);
       break;
     case 5:
       test_nfa_5(type);
@@ -344,6 +423,12 @@ void test_nfa(int num, TestType type)
       break;
     case 7:
       test_nfa_7(type);
+      break;
+    case 8:
+      test_nfa_8(type);
+      break;
+    case 9:
+      test_nfa_9(type);
       break;
 }
   printf("\n\n");
