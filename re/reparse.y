@@ -2,8 +2,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
-
-  //#include "nfa.h"
+#include "nfa.h"
 
 extern int yydebug;
 
@@ -26,7 +25,7 @@ void yyerror(const char *str)
 
 main()
   {
-    //yydebug=0;
+    yydebug=0;
     yyparse();
   }
 
@@ -35,12 +34,12 @@ main()
 %union
  {
    char* symbol;
-   char* nfa;
+   Nfa* nfa;
  }
 
 /* Bison Declarations */
 %token<symbol> t_SYMBOL
-%type<symbol> re term factor
+%type<nfa> re term factor
 
 %left '+'  /* union */
 %left '*'  /* kleene star */
@@ -48,23 +47,23 @@ main()
 /* Grammar Follows */
 %%
 
-commands:
-| commands re
+commands: /* empty */
+        | commands re
 ;
 
-re:       re '+' term    { $$=strcat($1,strcat((char*)"+",$3)); }
+re:       re '+' term    { $$ = $1->unite(*$3);/*nfa_union*/ }
         | term 
 ;
 
 term:     factor
-        | term factor    {$$ = strcat($1,$2);}
+        | term factor    { $$ = $1->concatenate(*$2); /*nfa_concatenate*/}
           
 ;
 
-factor:   t_SYMBOL
-        | '(' re ')'     { $$ = strcat((char*)"(",strcat($2,(char*)")")); }
-        | factor '*'     { $$ = strcat($1,(char*)"*"); }
-        | '@'            { $$ = (char*)"*"; }         
+factor:   t_SYMBOL       { $$ = Nfa::simple(t_SYMBOL); /*make simple nfa*/ }
+        | '(' re ')'     { $$ = $2; /*parenthesis matching*/}
+        | factor '*'     { $$ = $1->star(); /*nfa_star*/}
+        | '@'            { $$ = Nfa::simple("@"); } /*epsilon jump*/
 ;
 
 %%

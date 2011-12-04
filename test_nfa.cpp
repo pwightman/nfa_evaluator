@@ -8,7 +8,7 @@
 
 
 /* Please update this as you add tests */
-int NUM_TESTS = 5;
+int NUM_TESTS = 7;
 
 /* Used to specify granularity of testing */
 typedef enum {
@@ -51,7 +51,73 @@ Nfa* nfa_2();
 Nfa* nfa_3();
 Nfa* nfa_4();
 Nfa* nfa_5();
+Nfa* nfa_6();
+Nfa* nfa_7();
 /* End forward declarations */
+
+/* star test 
+   1*
+*/
+Nfa* nfa_7()
+{
+  Nfa* nfa = new Nfa();
+  Node* s1 = new Node("s1");
+  Node* s2 = new Node("s2");
+
+  nfa->addTransition(*s1, *s2, "1");
+  nfa->makeInitial(*s1);
+  nfa->makeFinal(*s2);
+
+  nfa->star();
+
+  return nfa;
+}
+
+void test_nfa_7(TestType type)
+{
+  Nfa* nfa = nfa_7();
+  assert_nfa(nfa, "@",      true,  type);
+  assert_nfa(nfa, "1",      true,  type);
+  assert_nfa(nfa, "0",      false, type);
+  assert_nfa(nfa, "11",     true,  type);
+  assert_nfa(nfa, "111",    true,  type);
+  assert_nfa(nfa, "1110",   false, type);
+  assert_nfa(nfa, "11111",  true,  type);
+  assert_nfa(nfa, "111111", true,  type);
+}
+
+/* star multi test 
+   (01)*
+*/
+Nfa* nfa_6()
+{
+  Nfa* nfa = new Nfa();
+  Node* s1 = new Node("s1");
+  Node* s2 = new Node("s2");
+  Node* s3 = new Node("s3");
+
+  nfa->addTransition(*s1, *s2, "0");
+  nfa->addTransition(*s1, *s2, "1");
+  nfa->makeInitial(*s1);
+  nfa->makeFinal(*s3);
+
+  nfa->star();
+
+  return nfa;
+}
+
+void test_nfa_6(TestType type)
+{
+  Nfa* nfa = nfa_6();
+  assert_nfa(nfa, "@",          true,  type);
+  assert_nfa(nfa, "1",          false, type);
+  assert_nfa(nfa, "0",          false, type);
+  assert_nfa(nfa, "01",         true,  type);
+  assert_nfa(nfa, "0101",       true,  type);
+  assert_nfa(nfa, "010101",     true,  type);
+  assert_nfa(nfa, "01010101",   true,  type);
+  assert_nfa(nfa, "0101010101", true,  type);
+}
 
 /*
  * Same as test_nfa_3 but tests the simple method
@@ -273,7 +339,13 @@ void test_nfa(int num, TestType type)
     case 5:
       test_nfa_5(type);
       break;
-  }
+    case 6:
+      test_nfa_6(type);
+      break;
+    case 7:
+      test_nfa_7(type);
+      break;
+}
   printf("\n\n");
 }
 

@@ -82,11 +82,12 @@ void Nfa::star()
     while (i.hasNext())
     {
         Node* node = i.next();
-        node->addRelation(*q0, "@");
+        node->addRelation(*newq0, "@");
     }
 
     // Make newq0 the new q0
-    q0 = newq0;
+    makeInitial(*newq0);
+    makeFinal(*newq0);
 }
 
 static int qHash(const Node& node)
