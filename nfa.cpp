@@ -109,13 +109,14 @@ void Nfa::debugPrintSet(QSet<QString>* set)
 
 void printSet(QSet<Node>* set)
 {
-  QSetIterator<Node> i(*set);
-  Node* node;
-  while(i.hasNext())
-  {
-    (node = &((Node)i.next()))->debugPrint();
-    printf("MEM: %d\n", (long)node);
-  }
+    QSetIterator<Node> i(*set);
+    Node node;
+    while(i.hasNext())
+    {
+        node = i.next();
+        node.debugPrint();
+        printf("MEM: %ul\n", (unsigned long)&node);
+    }
 }
 
 bool Nfa::isValidString(QString string, bool isParallel)
