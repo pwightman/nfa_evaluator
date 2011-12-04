@@ -9,6 +9,18 @@ Nfa::Nfa()
     f = new QSet<Node*>();
 }
 
+Nfa* Nfa::simple(QString str)
+{
+  Node* s1 = new Node();
+  Node* s2 = new Node();
+  Nfa* nfa = new Nfa();
+  nfa->addTransition(*s1, *s2, str);
+  nfa->makeInitial(*s1);
+  nfa->makeFinal(*s2);
+
+  return nfa;
+}
+
 void Nfa::addTransition(Node& source, Node& destination, QString value)
 {
     source.addRelation(destination, value);

@@ -21,6 +21,8 @@ public:
     void star();
     void* finals();
     void* initial();
+    /* Create a simple nfa with two states (initial and final) that jumps on str */
+    static Nfa* simple(QString str);
 
     QSet<Node*>* runNfa(QString string);
 

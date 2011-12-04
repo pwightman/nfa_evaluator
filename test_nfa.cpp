@@ -8,7 +8,7 @@
 
 
 /* Please update this as you add tests */
-int NUM_TESTS = 4;
+int NUM_TESTS = 5;
 
 /* Used to specify granularity of testing */
 typedef enum {
@@ -50,8 +50,35 @@ Nfa* nfa_1();
 Nfa* nfa_2();
 Nfa* nfa_3();
 Nfa* nfa_4();
+Nfa* nfa_5();
 /* End forward declarations */
 
+/*
+ * Same as test_nfa_3 but tests the simple method
+ */
+Nfa* nfa_5()
+{
+  Nfa* nfa1 = Nfa::simple("0");
+
+  Nfa* nfa2 = Nfa::simple("1");
+
+  nfa1->unite(*nfa2);
+
+  return nfa1;
+}
+
+void test_nfa_5(TestType type)
+{
+  Nfa* nfa = nfa_5();
+  assert_nfa(nfa, "@", false, type);
+  assert_nfa(nfa, "1", true, type);
+  assert_nfa(nfa, "0", true, type);
+  assert_nfa(nfa, "2", false, type);
+  assert_nfa(nfa, "00", false, type);
+  assert_nfa(nfa, "10", false, type);
+  assert_nfa(nfa, "01", false, type);
+  assert_nfa(nfa, "11", false, type);
+}
 
 /*
  * uses nfa_2
@@ -242,6 +269,9 @@ void test_nfa(int num, TestType type)
       break;
     case 4:
       test_nfa_4(type);
+      break;
+    case 5:
+      test_nfa_5(type);
       break;
   }
   printf("\n\n");
