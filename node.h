@@ -46,6 +46,11 @@ public:
     QSet<Node>* traverseOn(QString value, int direction);
 
     /*
+     * Steps only this node based on the value passed in. Does not account for epsilon jumps
+     */
+    Node* step(QString value, int direction);
+
+    /*
      * addRelation takes in a destination node, and a traversal value.  The reason I 
      * called this Relation instead of Traversal is because it adds the forward and 
      * backward relation.

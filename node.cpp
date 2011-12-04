@@ -71,6 +71,7 @@ QSet<Node>* Node::rawStates(int direction)
 QSet<Node>* Node::traverseOn(QString value, int direction)
 {
     QHash<QString, QSet<Node>*>* links = getHash(direction);
+
     if (links == NULL)
     {
         // If an incorrect direction was passed in, then return an empty set.
@@ -78,7 +79,7 @@ QSet<Node>* Node::traverseOn(QString value, int direction)
         {
             printf("Incorrect direction passed into traverseOn\n");
         }
-        return new QSet<Node>();
+        return NULL;
     }
 
     // Create an empty set.

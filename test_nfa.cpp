@@ -4,7 +4,7 @@
 #include <QHash>
 #include <QSet>
 #include <iostream>
-#include "Nfa.h"
+#include "nfa.h"
 
 /* Please update this as you add tests */
 int NUM_TESTS = 1;
@@ -46,50 +46,14 @@ const char* testTypeStr(TestType type)
 
 Nfa* nfa_1()
 {
-    QSet<QString>* Q = new QSet<QString>();
-    QString q0("");
-    QSet<QString>* sigma = new QSet<QString>();
-    QHash<QPair<QString, QString>, QSet<QString>*>* delta = new QHash<QPair<QString, QString>, QSet<QString>*>();
-    QSet<QString>* f = new QSet<QString>();
+  Nfa* nfa = new Nfa();
+  Node* s1 = new Node("s1");
+  Node* s2 = new Node("s2");
+  nfa->addTransition(*s1, *s2, "1");
+  nfa->makeInitial(*s1);
+  nfa->makeFinal(*s2);
 
-    Q->insert(QString("S1"));
-    Q->insert(QString("S2"));
-    Q->insert(QString("S3"));
-
-    q0 = QString("S1");
-
-    sigma->insert(QString("0"));
-    sigma->insert(QString("1"));
-
-    f->insert(QString("S3"));
-
-    QPair<QString, QString> pair1;
-    QPair<QString, QString> pair2;
-    QPair<QString, QString> pair3;
-    QSet<QString>* set = new QSet<QString>();
-
-    pair1.first = QString("S1");
-    pair1.second = QString("@");
-    set->insert(QString("S2"));
-    set->insert(QString("S3"));
-
-    delta->insert(pair1, set);
-
-    pair2.first = QString("S2");
-    pair2.second = QString("1");
-    set = new QSet<QString>();
-    set->insert(QString("S3"));
-
-    delta->insert(pair2, set);
-
-    pair3.first = QString("S3");
-    pair3.second = QString("0");
-    set = new QSet<QString>();
-    set->insert(QString("S2"));
-
-    delta->insert(pair3, set);
-
-    return Nfa::createNfa(Q, q0, sigma, delta, f);
+  return nfa;
 }
 
 /* Testing on nfa_1 */
@@ -139,10 +103,11 @@ void assert_nfa(Nfa* nfa, QString str, bool expected, TestType type)
   }
 
   /* When testing both, this is a more robust test of making sure the returned sets were equal */
+  /*
   if (type == TestTypeBoth) 
   {
-    QSet<QString>* first = nfa->runNfa(str);
-    QSet<QString>* second = nfa->runNfaP(str);
+    QSet<Node>* first = nfa->runNfa(str);
+    QSet<Node>* second = nfa->runNfaP(str);
     if((*first) != (*second))
     {
       printf("FAILED: %s\n", str.toStdString().c_str());
@@ -151,6 +116,7 @@ void assert_nfa(Nfa* nfa, QString str, bool expected, TestType type)
       printf("\tParallel   : %s\n", debugString(second));
     }
   }
+  */
   
 }
 

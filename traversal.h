@@ -3,22 +3,24 @@
 
 #include <QString>
 
+class Node;
+
 class Traversal
 {
   public:
-    Traversal(int stringPos, QString* state);
+    Traversal(int stringPos, Node& state);
 
     /* Getter/setter stringLeft */
     int stringPos();
     void setStringPos(int newStringPos);
 
     /* Getter/setter state */
-    QString* state();
-    void setState(QString* newState);
+    Node* state();
+    void setState(Node& newState);
 
   private:
     /* Instance variables */
-    QString* _state;
+    Node* _state;
     int _stringPos;
 
     Traversal();
