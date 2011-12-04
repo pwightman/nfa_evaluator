@@ -1,41 +1,70 @@
+/* Regular expression to NFA parser generator -- reparse */
 %{
 #include <stdio.h>
 #include <string.h>
 
-  void yyerror(const char *str)
+#include "nfa.h"
+
+extern int yydebug;
+
+//#ifdef _cplusplus
+ extern "C"
+ {
+   int yyparse(void);
+   int yylex(void);
+   int yywrap()
+   {
+     return 1;
+   }
+ } 
+ //#endif
+  
+void yyerror(const char *str)
+{
+  fprintf(stderr,"error: %s\n",str);
+}
+
+main()
   {
-    fprintf(stderr,"error: %s\n",str);
+    //yydebug=0;
+    yyparse();
   }
 
-  int yywrap()
-  {
-    return 1;
-  }
+%}
 
-  main()
-    {
-      yyparse();
-    }
+%union
+ {
+   char* symbol;
+   char* nfa;
+ }
 
-  %}
+/* Bison Declarations */
+%token<symbol> t_SYMBOL
+%type<symbol> re term factor
 
-%token t_PLUS t_STAR t_LPAREN t_RPAREN t_EPS t_STRING
+%left '+'  /* union */
+%left '*'  /* kleene star */
 
+/* Grammar Follows */
 %%
 
 commands:
-| commands command
+| commands re
 ;
 
-
-command:
-p_expression_plus
+re:       re '+' term    { $$=strcat($1,strcat((char*)"+",$3)); }
+        | term 
 ;
 
-p_expression_plus:
-t_STRING t_PLUS t_STRING
-{
-  printf("%d + %d",$1, $3);
-}
+term:     factor
+        | term factor    {$$ = strcat($1,$2);}
+          
 ;
 
+factor:   t_SYMBOL
+        | '(' re ')'     { $$ = strcat((char*)"(",strcat($2,(char*)")")); }
+        | factor '*'     { $$ = strcat($1,(char*)"*"); }
+        | '@'            { $$ = (char*)"*"; }         
+;
+
+%%

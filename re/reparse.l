@@ -1,14 +1,15 @@
 %{
 #include <stdio.h>
-#include "y.tab.h"
+#include "reparse.hpp"
+
+//[\w^\d]\w*
+// [a-zA-Z_][a-zA-Z0-9_]* {yylval.string=strdup(yytext); return t_STRING;}
 %}
 
 %% Tokens 
-\+ return t_PLUS;
-\* return t_STAR;
-\( return t_LPAREN;
-\) return t_RPAREN;
-\" return t_EPS;
-[a-zA-Z_][a-zA-z0-9_]* return t_STRING;
-[ \t]+ /* Ignore whitespace */;
+
+[a-zA-Z0-9]            { yylval.symbol=strdup(yytext); return t_SYMBOL; }
+[ \t]+                    /* Ignore whitespace */;
+.                      return (int) yytext[0];
+
 %%
