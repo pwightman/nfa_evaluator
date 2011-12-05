@@ -159,14 +159,14 @@ Nfa* nfa_11()
   Node* s9 = new Node("s9");
   Node* s10 = new Node("s10");
 
-  nfa->addTransition(*s1,*s2,"@");
-  nfa->addTransition(*s2,*s3,"a");
-  nfa->addTransition(*s3,*s4,"@");
-  nfa->addTransition(*s4,*s5,"b");
-  nfa->addTransition(*s5,*s6,"@");
-  nfa->addTransition(*s6,*s7,"@");
-  nfa->addTransition(*s7,*s8,"c");
-  nfa->addTransition(*s8,*s9,"@");
+  nfa->addTransition(*s1,*s2, "@");
+  nfa->addTransition(*s2,*s3, "a");
+  nfa->addTransition(*s3,*s4, "@");
+  nfa->addTransition(*s4,*s5, "b");
+  nfa->addTransition(*s5,*s6, "@");
+  nfa->addTransition(*s6,*s7, "@");
+  nfa->addTransition(*s7,*s8, "c");
+  nfa->addTransition(*s8,*s9, "@");
   nfa->addTransition(*s9,*s10,"d");
 
   nfa->makeInitial(*s1);
@@ -587,7 +587,7 @@ void test_nfa(int num, TestType type)
       test_nfa_3(type);
       break;
     case 4:
-      test_nfa_4(type);
+      //test_nfa_4(type);
       break;
     case 5:
       test_nfa_5(type);
