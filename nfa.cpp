@@ -77,12 +77,12 @@ void Nfa::star()
     Node* newq0 = new Node("AG"); // AG: Auto generated.
     newq0->addRelation(*q0, "@");
 
-    // Link all final states to q0.
+    // Link all final states to newq0.
     QSetIterator<Node*> i(*f);
     while (i.hasNext())
     {
         Node* node = i.next();
-        node->addRelation(*q0, "@");
+        node->addRelation(*newq0, "@");
     }
 
     // Make newq0 the new q0
