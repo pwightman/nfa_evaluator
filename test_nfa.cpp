@@ -9,6 +9,7 @@
 
 /* Please update this as you add tests */
 int NUM_TESTS = 12;
+extern void printSet(QSet<Node*>* set);
 
 /* Used to specify granularity of testing */
 typedef enum {
@@ -468,6 +469,8 @@ Nfa* nfa_2()
   nfa->addTransition(*s3, *s1, "@");
   nfa->makeInitial(*s1);
   nfa->makeFinal(*s1);
+  //nfa->makeFinal(*s2);
+  //nfa->makeFinal(*s3);
 
   return nfa;
 }
@@ -482,9 +485,11 @@ void test_nfa_2(TestType type)
   assert_nfa(nfa, "11110", true, type);
   assert_nfa(nfa, "00111010100011", true, type);
   assert_nfa(nfa, "00111210100011", false, type);
+  assert_nfa(nfa, "2", false, type);
   assert_nfa(nfa, "@", true, type);
 }
 
+/* one more 1 than 0's */
 Nfa* nfa_1()
 {
   Nfa* nfa = new Nfa();
@@ -521,14 +526,14 @@ void assert_nfa(Nfa* nfa, QString str, bool expected, TestType type)
 
   /* Run the tests for the correct type */
   if((type == TestTypeSequential) || (type == TestTypeBoth))
-    results.push_back(
+    results.append(
       QPair<bool,TestType>(
         (nfa->isValidString(str, false) == expected), TestTypeSequential
       )
     );
    
   if((type == TestTypeParallel) || (type == TestTypeBoth))
-    results.push_back(
+    results.append(
       QPair<bool,TestType>(
         (nfa->isValidString(str, true) == expected), TestTypeParallel
       )
@@ -586,9 +591,9 @@ void test_nfa(int num, TestType type)
     case 3:
       test_nfa_3(type);
       break;
-    case 4:
-      test_nfa_4(type);
-      break;
+    //case 4:
+      //test_nfa_4(type);
+      //break;
     case 5:
       test_nfa_5(type);
       break;
@@ -613,9 +618,45 @@ void test_nfa(int num, TestType type)
     case 12:
       test_nfa_12(type);
       break;
+    default:
+      return;
 }
   printf("\n\n");
 }
+
+void assert_raw(Node* node, QSet<Node*>* expected)
+{
+  QSet<Node*>* actual;
+  if(*( actual = node->rawStates(FORWARDS)) == *expected)
+    printf(".");
+  else
+  {
+    printf("FAILED:\n");
+    printf("\tActual  :\n");
+    printSet(actual);
+    printf("\tExpected:\n");
+    printSet(expected);
+  }
+  
+  
+}
+
+void test_raw_states()
+{
+  Node* s1 = new Node("s1");
+  Node* s2 = new Node("s2");
+
+  QSet<Node*>* test1 = new QSet<Node*>();
+  test1->insert(s1);
+
+  assert_raw(s1, test1);
+
+  s1->addRelation(*s2, "@");
+
+  test1->insert(s2);
+  assert_raw(s1, test1);
+}
+
 
 /*
  * Runs all the tests
@@ -633,7 +674,9 @@ void test_all(TestType type)
  */
 int main()
 {
-  test_all(TestTypeSequential);
+  //test_all(TestTypeSequential);
+  //test_nfa(2, TestTypeSequential);
+  test_raw_states();
   printf("\n");
 }
 

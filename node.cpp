@@ -1,6 +1,8 @@
 #include "node.h"
 #include "stdio.h"
 
+extern void printSet(QSet<Node*>* set);
+
 Node::Node()
 {
     connections = new QHash<QString, QSet<Node*>*>();
@@ -41,8 +43,26 @@ QHash<QString, QSet<Node*>*>* Node::getHash(int direction)
     return links;
 }
 
+/*
+def eclosure(NFA, Q):
+  """ E-closure(NFA, Q) obtains, given a starting set of states Q, the set of states                                                                                                                       
+  reachable by the NFA by traversing zero or more epsilon labeled transitions                                                                                                                              
+  """
+  return ech(NFA, Q)
+def ech(NFA, Allsofar, Previous=set()):
+  """ Extend Allsofar until nothing new (that's not in Previous) """
+  if (Allsofar == Previous):
+    return Allsofar
+  else:
+    all_state_sets_one_eps_away = list(map(lambda state: step_nfa(NFA, state, ''), Allsofar))
+    all_state_sets_one_eps_away = reduce(lambda x,y: set(x) | set(y),\
+                                  all_state_sets_one_eps_away + [set()]) # base case                                                                                                                        
+    return ech(NFA, set(all_state_sets_one_eps_away) | set(Allsofar), Allsofar) 
+ */
+
 QSet<Node*>* Node::rawStates(int direction)
 {
+/*
     QHash<QString, QSet<Node*>*>* links = getHash(direction);
     if (links == NULL)
     {
@@ -65,13 +85,74 @@ QSet<Node*>* Node::rawStates(int direction)
     }
 
     // Return the set.
-    return states;
+*/
+  
+    QSet<Node*>* nodes = new QSet<Node*>();
+    nodes->insert(this);
+    return eClosure(nodes, NULL, direction);
 }
 
-QSet<Node*>* Node::traverseOn(QString value, int direction)
+/*
+def ech(NFA, Allsofar, Previous=set()):
+  """ Extend Allsofar until nothing new (that's not in Previous) """
+  if (Allsofar == Previous):
+    return Allsofar
+  else:
+    all_state_sets_one_eps_away = list(map(lambda state: step_nfa(NFA, state, ''), Allsofar))
+    all_state_sets_one_eps_away = reduce(lambda x,y: set(x) | set(y),\
+                                  all_state_sets_one_eps_away + [set()]) # base case                                                                                                                        
+    return ech(NFA, set(all_state_sets_one_eps_away) | set(Allsofar), Allsofar) 
+ */
+
+
+QSet<Node*>* Node::eClosure(QSet<Node*>* allSoFar, QSet<Node*>* previous, int direction)
 {
+  
+  if(previous == NULL)
+  {
+    previous = new QSet<Node*>();
+  }
+
+  /* Base case */
+  if ((*allSoFar) == (*previous)) 
+  {
+    return allSoFar;
+  }
+
+  if(VERBOSE)
+  {
+    printf("\n\n==============\n\n");
+    printf("All so far:\n");
+    printSet(allSoFar);
+    printf("\n");
+  }
+
+  QSet<Node*>* one_step_eps = new QSet<Node*>();
+
+  QMutableSetIterator<Node*> i(*allSoFar);
+  while(i.hasNext())
+  {
+    one_step_eps->unite(*i.next()->connections->value("@"));    
+  }
+
+  one_step_eps->unite(*allSoFar);
+
+  if(VERBOSE)
+  {
+    printf("After closure:\n");
+    printSet(one_step_eps);
+    printf("\n");
+  }
+
+  return eClosure(one_step_eps, allSoFar, direction);
+}
+
+QSet<Node*>* Node::traverseOn(QString str, int direction)
+{
+  if(VERBOSE)
+    printf("traversing on %s:\n", str.toStdString().c_str());
     /* If they're checking for epsilon, just return yourself */
-    if (value == "@")
+    if (str == "@")
     {
       QSet<Node*>* set = new QSet<Node*>();
       set->insert(this);
@@ -93,10 +174,12 @@ QSet<Node*>* Node::traverseOn(QString value, int direction)
     // Create an empty set.
     QSet<Node*>* states = new QSet<Node*>();
 
+    states->insert(this);
+
     // If there are traversals on the value, then add them to the set.
-    if (links->contains(value))
+    if (links->contains(str))
     {
-        states->unite(*links->value(value));
+        states->unite(*links->value(str));
         QMutableSetIterator<Node*> i(*states);
         while(i.hasNext())
           states->unite(*(i.next()->rawStates(direction)));
@@ -187,11 +270,12 @@ void Node::debugPrint()
         printf("]\n");
     }
 }
-
+/*
 static int qHash(const Node& node)
 {
     return (int)(long)&node;
 }
+*/
 
 bool Node::operator==(const Node &other) const
 {

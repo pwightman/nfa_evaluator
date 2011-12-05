@@ -11,7 +11,7 @@
 #include <QHashIterator>
 
 /* VERBOSE must be set to 1 for the debug statements to print out. */
-#define VERBOSE 0
+#define VERBOSE 1
 #define FORWARDS 0
 #define BACKWARDS 1
 
@@ -61,6 +61,9 @@ public:
      * Two Nodes are considered equal if they have they same forward and reverse connections
      */
     bool operator==(const Node &other) const;
+
+    /* Recursive means of finding all reachable nodes from this node via epsilon jumps */
+    QSet<Node*>* eClosure(QSet<Node*>* allSoFar, QSet<Node*>* previous, int direction);
 
     // Debug methods.
     void debugPrint();
