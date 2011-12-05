@@ -167,24 +167,25 @@ bool Nfa::isValidString(QString string, bool isParallel)
 
 QSet<Node*>* Nfa::runNfa(QString string)
 {
-  return traverse(q0, string, FORWARDS);
+  return traverse(q0, &string, FORWARDS);
 }
 
 
-QSet<Node*>* Nfa::traverse(Node* node, QString str, int direction)
+QSet<Node*>* Nfa::traverse(Node* node, QString* str, int direction)
 {
     QSet<Node*>* q = node->rawStates(direction);
     // QPair<Node*, QString> pair;
 
     QSet<Node*>* newSet = new QSet<Node*>();
-    for (int i = 0; i < str.size(); i++)
+    for (int i = 0; i < str->size(); i++)
     {
         newSet->clear();
         QSetIterator<Node*> j(*q);
         while (j.hasNext())
         {
             Node* node = j.next();
-            newSet->unite(*node->traverseOn(QString(str[i]), direction));
+            QString subStr(str->at(i));
+            newSet->unite(*node->traverseOn(subStr, direction));
         }
 
         // Make q eqaul newSet.

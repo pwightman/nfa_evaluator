@@ -33,7 +33,7 @@ private:
     // Private member variables.
     Node* q0;
     QSet<Node*>* f;
-    QSet<Node*>* traverse(Node* node, QString str, int direction);
+    QSet<Node*>* traverse(Node* node, QString* str, int direction);
     // NOTE: Delta was removed because it's no longer needed.
 
 
