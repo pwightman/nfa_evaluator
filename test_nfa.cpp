@@ -127,7 +127,7 @@ void test_nfa_12(TestType type)
   Nfa* nfa = nfa_12();
 
   // assert_nfa(nfa, "@",       true,  type);
-  assert_nfa(nfa, "",        true,  type);
+  assert_nfa(nfa, "",        false, type);
   assert_nfa(nfa, "011",     true,  type);
   assert_nfa(nfa, "111",     true,  type);
   assert_nfa(nfa, "01011",   true,  type);
