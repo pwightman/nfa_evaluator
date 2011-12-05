@@ -132,7 +132,12 @@ QSet<Node*>* Node::eClosure(QSet<Node*>* allSoFar, QSet<Node*>* previous, int di
   QMutableSetIterator<Node*> i(*allSoFar);
   while(i.hasNext())
   {
-    one_step_eps->unite(*i.next()->connections->value("@"));    
+    // one_step_eps->unite(*i.next()->connections->value("@"));
+    Node* node = i.next();
+    if (node->connections->contains("@"))
+    {
+      one_step_eps->unite(*node->connections->value("@"));
+    }
   }
 
   one_step_eps->unite(*allSoFar);
