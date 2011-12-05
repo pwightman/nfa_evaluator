@@ -157,12 +157,12 @@ QSet<Node*>* Node::traverseOn(QString str, int direction)
   if(VERBOSE)
     printf("traversing on %s:\n", str.toStdString().c_str());
     /* If they're checking for epsilon, just return yourself */
-    if (str == "@")
+    /*if (str == "@")
     {
       QSet<Node*>* set = new QSet<Node*>();
       set->insert(this);
       return set;
-    }
+    }*/
 
     QHash<QString, QSet<Node*>*>* links = getHash(direction);
 
@@ -173,21 +173,21 @@ QSet<Node*>* Node::traverseOn(QString str, int direction)
         {
             printf("Incorrect direction passed into traverseOn\n");
         }
-        return NULL;
+        return new QSet<Node*>();
     }
 
     // Create an empty set.
     QSet<Node*>* states = new QSet<Node*>();
 
-    states->insert(this);
+    // states->insert(this);
 
     // If there are traversals on the value, then add them to the set.
     if (links->contains(str))
     {
         states->unite(*links->value(str));
-        QMutableSetIterator<Node*> i(*states);
+        /*QMutableSetIterator<Node*> i(*states);
         while(i.hasNext())
-          states->unite(*(i.next()->rawStates(direction)));
+          states->unite(*(i.next()->rawStates(direction)));*/
     }
 
     // Return the set.

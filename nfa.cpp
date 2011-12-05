@@ -167,17 +167,51 @@ bool Nfa::isValidString(QString string, bool isParallel)
 
 QSet<Node*>* Nfa::runNfa(QString string)
 {
-  return traverse(q0, &string, FORWARDS);
+  return traverse(q0, string, FORWARDS);
 }
 
 
-QSet<Node*>* Nfa::traverse(Node* node, QString* str, int direction)
+QSet<Node*>* Nfa::traverse(Node* node, QString str, int direction)
 {
-    QSet<Node*>* qSet = node->rawStates(direction);
+    QSet<Node*>* q = node->rawStates(direction);
+    // QPair<Node*, QString> pair;
+
+    QSet<Node*>* newSet = new QSet<Node*>();
+    for (int i = 0; i < str.size(); i++)
+    {
+        newSet->clear();
+        QSetIterator<Node*> j(*q);
+        while (j.hasNext())
+        {
+            Node* node = j.next();
+            newSet->unite(*node->traverseOn(QString(str[i]), direction));
+        }
+
+        // Make q eqaul newSet.
+        q->clear();
+        q->unite(*newSet); // Done this way for mem. management.
+
+        // Epsilon closure.
+        QSetIterator<Node*> k(*q);
+        while (k.hasNext())
+        {
+            Node* node = k.next();
+            q->unite(*node->rawStates(direction));
+        }
+
+        // Break out early if the q set ends up empty.
+        if (q->count() == 0)
+        {
+            return q;
+        }
+    }
+    return q;
+
+    /*QSet<Node*>* qSet = node->rawStates(direction);
     QPair<Node*, QString> pair;
 
     // Represents all the states that you ARE GOING TO be in, during the next iteration
-    QSet<Node*>* newSet = new QSet<Node*>();;
+    QSet<Node*>* newSet = new QSet<Node*>();
     for (int i = 0; i < str->size(); i++)
     {
         // Empty the new states (current states are kept in qSet)
@@ -185,7 +219,7 @@ QSet<Node*>* Nfa::traverse(Node* node, QString* str, int direction)
         QSetIterator<Node*> j(*qSet);
         while(j.hasNext())
         {
-            QString subStr((*str).at(i));
+            QString subStr((*str).at(i)); // NOTE: Can change to QString subStr[i];
             newSet->unite(*(((Node*)j.next())->traverseOn(subStr, direction)));
         }
 
@@ -209,7 +243,7 @@ QSet<Node*>* Nfa::traverse(Node* node, QString* str, int direction)
 
     // Congrats! There were matches!
     delete newSet;
-    return qSet;
+    return qSet;*/
 }
 
 /*QSet<QString>* Nfa::runNfaP(QString string)
