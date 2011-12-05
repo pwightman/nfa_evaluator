@@ -655,6 +655,13 @@ void test_raw_states()
 
   test1->insert(s2);
   assert_raw(s1, test1);
+
+  Node* s3 = new Node("s3");
+  test1->insert(s3);
+  s2->addRelation(*s3,"@");
+  s3->addRelation(*s1,"@");
+
+  assert_raw(s1,test1);
 }
 
 
@@ -674,9 +681,9 @@ void test_all(TestType type)
  */
 int main()
 {
-  //test_all(TestTypeSequential);
+  test_all(TestTypeSequential);
   //test_nfa(2, TestTypeSequential);
-  test_raw_states();
+  //test_raw_states();
   printf("\n");
 }
 

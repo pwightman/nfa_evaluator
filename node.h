@@ -11,7 +11,7 @@
 #include <QHashIterator>
 
 /* VERBOSE must be set to 1 for the debug statements to print out. */
-#define VERBOSE 1
+#define VERBOSE 0
 #define FORWARDS 0
 #define BACKWARDS 1
 
