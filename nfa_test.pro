@@ -27,6 +27,17 @@ HEADERS += \
     node.h \
     nfa.h
 
+LIBS += lex.yy.o
+
 QMAKE_CXXFLAGS += -fopenmp
 QMAKE_LFLAGS *= -fopenmp
 
+LEXSOURCES += reparse.l
+YACCSOURCES += reparse.y
+
+QMAKE_LEX = flex
+QMAKE_YACC = bison
+
+QMAKE_YACCFLAGS = -d -o reparse.tab.c
+QMAKE_YACC_HEADER =
+QMAKE_YACC_SOURCE =
