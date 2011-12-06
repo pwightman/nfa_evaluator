@@ -39,7 +39,7 @@ main()
 
 /* Bison Declarations */
 %token<symbol> t_SYMBOL
-%type<nfa> re term factor char
+%type<nfa> re term factor
 
 %left '+'  /* union */
 %left '*'  /* kleene star */
@@ -55,17 +55,15 @@ re:       re '+' term    { $$ = $1->unite(*$3);/*nfa_union*/ }
         | term 
 ;
 
-term:     term factor    { $$ = $1->concatenate(*$2); /*nfa_concatenate*/}
-        | factor
+term:   factor
+        | term factor    { $$ = $1->concatenate(*$2); /*nfa_concatenate*/}
           
 ;
 
-factor:   char '*'       { $$ = $1->star(); /*nfa_star*/}
-        | char
-;
-
-char:     '(' re ')'         { $$ = $2; /*parenthesis matching*/}
-        | '@'            { $$ = Nfa::simple("@"); } /*epsilon jump*/
+factor:   factor '*'     { $$ = $1->star(); /*nfa_star*/}
+        | '(' re ')'     { $$ = $2; /*parenthesis matching*/}
         | t_SYMBOL       { $$ = Nfa::simple(t_SYMBOL); /*make simple nfa*/ }
+        | '@'            { $$ = Nfa::simple("@"); } /*epsilon jump*/
+;
 
 %%
