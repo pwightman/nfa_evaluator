@@ -64,7 +64,7 @@ factor:   char '*'       { $$ = $1->star(); /*nfa_star*/}
         | char
 ;
 
-char: '(' re ')'         { $$ = $2; /*parenthesis matching*/}
+char:     '(' re ')'         { $$ = $2; /*parenthesis matching*/}
         | '@'            { $$ = Nfa::simple("@"); } /*epsilon jump*/
         | t_SYMBOL       { $$ = Nfa::simple(t_SYMBOL); /*make simple nfa*/ }
 
