@@ -24,16 +24,18 @@ public:
     /* Create a simple nfa with two states (initial and final) that jumps on str */
     static Nfa* simple(QString str);
 
-    QSet<Node*>* runNfa(QString string);
+    bool runNfa(QString string);
+    bool runNfaP(QString string);
 
     // Nfa methods.
     bool isValidString(QString string, bool isParallel);
+    QList<QSet<Node*>*>* partition();
+    QSet<Node*>* traverse(QSet<Node*>* node, QString* str, int direction);
 
 private:
     // Private member variables.
     Node* q0;
     QSet<Node*>* f;
-    QSet<Node*>* traverse(Node* node, QString* str, int direction);
     // NOTE: Delta was removed because it's no longer needed.
 
 

@@ -1,6 +1,9 @@
 #include "nfa.h"
+#include <algorithm>
 #include "stdio.h"
 #include <QHashIterator>
+
+#define NUM_THREADS 4 // DO NOT SET LESS THAN 2!
 
 
 Nfa::Nfa()
@@ -91,10 +94,12 @@ void Nfa::star()
     makeFinal(*newq0);
 }
 
+/*
 static int qHash(const Node& node)
 {
     return (int)(long)&node;
 }
+*/
 
 /*void Nfa::debugPrintDelta()
 {
@@ -157,35 +162,80 @@ bool Nfa::isValidString(QString string, bool isParallel)
         finalStates = runNfa(string);
     }
     */
-    QSet<Node*>* endingStates = runNfa(string);
-    endingStates->intersect(*f);
-    bool intersects = endingStates->count() > 0;
-    delete endingStates; // Remove memory allocated for finalStates.
-    return intersects;
+
+    return (isParallel ? runNfaP(string) : runNfa(string));
 }
 
 
-QSet<Node*>* Nfa::runNfa(QString string)
+bool Nfa::runNfa(QString string)
 {
-  return traverse(q0, &string, FORWARDS);
+  QSet<Node*>* set = new QSet<Node*>();
+  set->insert(q0);
+  /* Sending -1 to traverse implies sequential execution */
+  QSet<Node*>* endingStates = traverse(set, &string, -1);
+  endingStates->intersect(*f);
+  bool intersects = endingStates->count() > 0;
+  delete endingStates; // Remove memory allocated for finalStates.
+  
+  return intersects;
 }
 
 
-QSet<Node*>* Nfa::traverse(Node* node, QString* str, int direction)
+QSet<Node*>* Nfa::traverse(QSet<Node*>* node, QString* str, int direction)
 {
-    QSet<Node*>* q = node->rawStates(direction);
-    // QPair<Node*, QString> pair;
+    QSet<Node*>* q = node; //node->rawStates(direction);
+
+    /* 
+     * We want the rest of the functions to perform only considering the
+     * Possibility of FORWARDS/BACKWARDS, not -1
+     */
+    int trav_direction = (direction == -1 || direction == FORWARDS ? FORWARDS : BACKWARDS);
+
+    // Epsilon closure
+    QSetIterator<Node*> k(*q);
+    while (k.hasNext())
+    {
+        Node* node = k.next();
+        q->unite(*node->rawStates(trav_direction));
+    }
+
+    /*
+     * Setup variables that loop will use
+     */
+    int incr = 1;
+    int limit = str->size();
+    int i = 0;
+    if(direction != -1)
+    {
+      if(direction == FORWARDS)
+      {
+        limit = (str->size() % 2 == 0 ? str->size() / 2 + 1 : str->size() / 2 );
+        printf("FORWARDS: i: %d, limit: %d\n", i, limit);//(direction == FORWARDS ? "Forwards" : "Backwards"));
+      }
+      /* Backwards */
+      else
+      {
+        limit = str->size() / 2 + 1;
+        incr = -1;
+        i = str->size() - 1;
+        printf("BACKWARDS: i: %d, limit: %d, string length: %d\n", i, limit, str->size());//(direction == FORWARDS ? "Forwards" : "Backwards"));
+      }
+    }
+
+    //printf("Outside: i: %d, limit: %d\n", i, limit);//(direction == FORWARDS ? "Forwards" : "Backwards"));
 
     QSet<Node*>* newSet = new QSet<Node*>();
-    for (int i = 0; i < str->size(); i++)
+    /* You want to loop backwards sometimes, so the comparison you do depends on that */
+    for (; ( trav_direction == FORWARDS ? i < limit : i >= limit ); i += incr)
     {
+    //printf("i: %d, limit: %d\n", i, limit);//(direction == FORWARDS ? "Forwards" : "Backwards"));
         newSet->clear();
         QSetIterator<Node*> j(*q);
         while (j.hasNext())
         {
             Node* node = j.next();
             QString subStr(str->at(i));
-            newSet->unite(*node->traverseOn(subStr, direction));
+            newSet->unite(*node->traverseOn(subStr, trav_direction));
         }
 
         // Make q eqaul newSet.
@@ -197,7 +247,7 @@ QSet<Node*>* Nfa::traverse(Node* node, QString* str, int direction)
         while (k.hasNext())
         {
             Node* node = k.next();
-            q->unite(*node->rawStates(direction));
+            q->unite(*node->rawStates(trav_direction));
         }
 
         // Break out early if the q set ends up empty.
@@ -207,96 +257,121 @@ QSet<Node*>* Nfa::traverse(Node* node, QString* str, int direction)
         }
     }
     return q;
-
-    /*QSet<Node*>* qSet = node->rawStates(direction);
-    QPair<Node*, QString> pair;
-
-    // Represents all the states that you ARE GOING TO be in, during the next iteration
-    QSet<Node*>* newSet = new QSet<Node*>();
-    for (int i = 0; i < str->size(); i++)
-    {
-        // Empty the new states (current states are kept in qSet)
-        newSet->clear();
-        QSetIterator<Node*> j(*qSet);
-        while(j.hasNext())
-        {
-            QString subStr((*str).at(i)); // NOTE: Can change to QString subStr[i];
-            newSet->unite(*(((Node*)j.next())->traverseOn(subStr, direction)));
-        }
-
-        if(VERBOSE)
-        {
-          printf("qSet:\n");
-          printSet(qSet);
-          printf("newSet:\n");
-          printSet(newSet);
-        }
-
-        qSet->clear();
-        qSet->unite(*newSet); // Done this way for memory management.
-
-        if (qSet->count() == 0)
-        {
-            return qSet;
-        }
-
-    }
-
-    // Congrats! There were matches!
-    delete newSet;
-    return qSet;*/
 }
 
-/*QSet<QString>* Nfa::runNfaP(QString string)
+/*
+typedef struct 
 {
-    // debugPrintDelta();
-    QSet<QString>* qSet = new QSet<QString>();
-    qSet->insert(q0);
+  QList<QSet<Node*>*>* results
+} NfaParams;
+*/
 
-    QPair<QString, QString> pair;
-    pair.first = q0;
-    pair.second = QString("@");
-    // printf("key< %s %s >\n", pair.first.toStdString().c_str(), pair.second.toStdString().c_str());
+QList<QSet<Node*>*>* Nfa::partition()
+{
+  QList<QSet<Node*>*>* sets = new QList<QSet<Node*>*>();
 
-    if (delta->contains(pair))
+  int i;
+  int num_finals = f->size();
+
+  /*
+   * Create sets for each of the threads, except one, which will
+   * be dedicated to the initial state
+   */
+  for (i = 0; i < std::min(NUM_THREADS - 1, num_finals); i++) 
+  {
+    QSet<Node*>* set = new QSet<Node*>();
+    sets->append(set);
+  }
+
+  QMutableSetIterator<Node*> j(*f);
+  i = 0;
+  while(j.hasNext())
+  {
+    /* Round robin all of the final states into the sets */
+    (*sets)[i % (NUM_THREADS - 1)]->insert(j.next());
+    i++;
+  }
+
+  // Add the inital to its own set
+  // IMPORTANT: runNfaP depends on this being the last element in the list
+  QSet<Node*>* initialSet = new QSet<Node*>();
+  initialSet->insert(q0);
+  sets->append(initialSet);
+
+  return sets;
+}
+
+typedef struct
+{
+  Nfa* nfa;
+  QSet<Node*>* nodes;
+  QString* str;
+  bool isInitial;
+} NfaParams;
+
+void* traverseP(void* _params)
+{
+  NfaParams* params = (NfaParams*)_params;
+
+  int direction = (params->isInitial ? FORWARDS : BACKWARDS);
+  QSet<Node*>* results = params->nfa->traverse(params->nodes, params->str, direction);
+
+  return results;
+}
+
+bool Nfa::runNfaP(QString string)
+{
+  /* Create the partition of states */
+  QList<QSet<Node*>*>* part = partition();
+  /* Holder for the resulting sets of the traversals */
+  QList<QSet<Node*>*>* results = new QList<QSet<Node*>*>();
+
+  pthread_t* threads = (pthread_t*)malloc(part->size()*sizeof(pthread_t));
+  NfaParams* params = (NfaParams*)malloc(part->size()*sizeof(NfaParams));
+  int i;
+
+  /*
+   *  IMPORTANT: An assumption is being made here that the very last set 
+   *  in the list contains ONLY the inital state
+   *
+   */
+  for(i = 0; i < part->size(); i++)
+  {
+    params[i].nfa = this;
+    params[i].str = &string;
+    /* If the set is the initial state, mark it as such */
+    if (i == part->size() - 1) 
     {
-        qSet->unite(*delta->value(pair));
-        //debugPrintSet(qSet);
-        //printf("\n");
+      params[i].isInitial = true;
     }
-
-    QSet<QString>* newSet = new QSet<QString>();;
-    #pragma omp parallel for
-    for (int i = 0; i < string.length(); i++)
+    else
     {
-        newSet->clear();
-        QSetIterator<QString> j(*qSet);
-        while(j.hasNext())
-        {
-            pair.first = j.next();
-            pair.second = string[i];
-            if (delta->contains(pair))
-            {
-                newSet->unite(*delta->value(pair));
-            }
-
-            pair.second = QString("@");
-            if (delta->contains(pair))
-            {
-                newSet->unite(*delta->value(pair));
-            }
-
-            qSet->clear();
-            qSet->unite(*newSet); // Done this way for memory management.
-
-            //if (qSet->count() == 0)
-            //{
-            //    return qSet;
-            //}
-        }
+      params[i].isInitial = false;
     }
+    params[i].nodes = part->at(i);
+    pthread_create(&threads[i], NULL, &traverseP, &params[i]);
+  }
 
-    //debugPrintSet(qSet);
-    //printf("\n");
-    return qSet;
-}*/
+  for (i = 0; i < part->size(); i++) 
+  {
+    QSet<Node*>* ptr = NULL;
+    pthread_join(threads[i], (void**)&ptr);
+    results->append(ptr);
+  }
+
+  QSet<Node*>* initialStateSet = results->last();
+  bool intersects = false;
+
+  for(i = 0; i < results->size(); i++)
+  {
+    //printf("Set %d size: %d %s\n", i, (*results)[i]->size(), (params[i].isInitial ? "INITIAL" : ""));
+    //printSet((*results)[i]);
+    if(initialStateSet->intersect(*results->at(i)).size() > 0)
+      intersects = true;
+  }
+
+  free(threads);
+  free(params);
+
+  return intersects;
+}
