@@ -1,8 +1,0 @@
-flex reparse.l
-     produces lex.yy.c (lexer)
-bison -d reparse.y -o reparse.cpp
-      produces reparse.hpp, reparse.cpp (parser)
-gcc-4.2 -c lex.yy.c -o lex.yy.o
-	produces lex.yy.o (lexer)
-g++-4.2 -I .. lex.yy.o reparse.cpp -o reparse
-	produces reparse (executable)

@@ -55,14 +55,14 @@ re:       re '+' term    { $$ = $1->unite(*$3);/*nfa_union*/ }
         | term 
 ;
 
-term:     factor
+term:   factor
         | term factor    { $$ = $1->concatenate(*$2); /*nfa_concatenate*/}
           
 ;
 
-factor:   t_SYMBOL       { $$ = Nfa::simple(t_SYMBOL); /*make simple nfa*/ }
+factor:   factor '*'     { $$ = $1->star(); /*nfa_star*/}
         | '(' re ')'     { $$ = $2; /*parenthesis matching*/}
-        | factor '*'     { $$ = $1->star(); /*nfa_star*/}
+        | t_SYMBOL       { $$ = Nfa::simple(t_SYMBOL); /*make simple nfa*/ }
         | '@'            { $$ = Nfa::simple("@"); } /*epsilon jump*/
 ;
 
