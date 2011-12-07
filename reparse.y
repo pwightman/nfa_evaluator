@@ -24,19 +24,13 @@ void yyerror(const char *str)
   fprintf(stderr,"error: %s\n",str);
 }
 
-main()
-  {
-    yydebug=0;
-    yyparse();
-  }
+int main()
+{
+  yydebug=0;
+  yyparse();
+}
 
 %}
-
-%union
- {
-   char* symbol;
-   Nfa* nfa;
- }
 
 /* Bison Declarations */
 %token<symbol> t_SYMBOL

@@ -1,6 +1,6 @@
 %{
 #include <stdio.h>
-#include "reparse.hpp"
+#include "reparse_yacc.h"
 
 //[\w^\d]\w*
 // [a-zA-Z_][a-zA-Z0-9_]* {yylval.string=strdup(yytext); return t_STRING;}

@@ -5,7 +5,6 @@
 #include <QSet>
 #include <QString>
 #include <QPair>
-#include "traversal.h"
 #include "node.h"
 
 class Nfa
