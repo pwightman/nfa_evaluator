@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "nfa.h"
+#include <QString>
 
 extern int yydebug;
 
@@ -48,21 +49,21 @@ main()
 %%
 
 commands: /* empty */
-        | commands re
+        | re
 ;
 
-re:       re '+' term    { $$ = $1->unite(*$3);/*nfa_union*/ }
+re:       re '+' term    { $1->unite(*$3);/*nfa_union*/ }
         | term 
 ;
 
 term:   factor
-        | term factor    { $$ = $1->concatenate(*$2); /*nfa_concatenate*/}
+        | term factor    { $1->concatenate(*$2); /*nfa_concatenate*/}
           
 ;
 
-factor:   factor '*'     { $$ = $1->star(); /*nfa_star*/}
+factor:   factor '*'     { $1->star(); /*nfa_star*/}
         | '(' re ')'     { $$ = $2; /*parenthesis matching*/}
-        | t_SYMBOL       { $$ = Nfa::simple(t_SYMBOL); /*make simple nfa*/ }
+        | t_SYMBOL       { $$ = Nfa::simple(QString(t_SYMBOL)); /*make simple nfa*/ }
         | '@'            { $$ = Nfa::simple("@"); } /*epsilon jump*/
 ;
 
