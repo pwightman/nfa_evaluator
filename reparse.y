@@ -32,6 +32,12 @@ int main()
 
 %}
 
+%union
+{
+    char* symbol;
+    Nfa* nfa;
+}
+
 /* Bison Declarations */
 %token<symbol> t_SYMBOL
 %type<nfa> re term factor
