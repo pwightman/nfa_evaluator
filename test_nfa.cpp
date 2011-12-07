@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <QString>
 #include <QVector>
+#include <QTime>
 #include <QHash>
 #include <QSet>
 #include <iostream>
@@ -8,7 +9,7 @@
 
 
 /* Please update this as you add tests */
-int NUM_TESTS = 12;
+int NUM_TESTS = 13;
 extern void printSet(QSet<Node*>* set);
 
 /* Used to specify granularity of testing */
@@ -57,7 +58,48 @@ Nfa* nfa_7();
 Nfa* nfa_10();
 Nfa* nfa_11();
 Nfa* nfa_12();
+Nfa* nfa_13();
 /* End forward declarations */
+
+/*
+ * No epsilon jumps
+ */
+Nfa* nfa_13()
+{
+  Nfa* nfa = new Nfa();
+
+  Node* s1 = new Node("s1");
+  Node* s2 = new Node("s2");
+  Node* s3 = new Node("s3");
+  Node* s4 = new Node("s4");
+  Node* s5 = new Node("s5");
+
+  nfa->addTransition(*s1, *s2, "1");
+  nfa->addTransition(*s2, *s3, "2");
+  nfa->addTransition(*s3, *s4, "3");
+  nfa->addTransition(*s4, *s5, "4");
+
+  nfa->makeInitial(*s1);
+
+  nfa->makeFinal(*s3);
+
+  return nfa;
+}
+
+void test_nfa_13(TestType type)
+{
+  Nfa* nfa = nfa_13();
+  assert_nfa(nfa, "1234", false, type);
+  assert_nfa(nfa, "432", false, type);
+  assert_nfa(nfa, "123", false, type);
+  assert_nfa(nfa, "1", false, type);
+  assert_nfa(nfa, "21", false, type);
+  assert_nfa(nfa, "4", false, type);
+  assert_nfa(nfa, "34", false, type);
+  assert_nfa(nfa, "43", false, type);
+  assert_nfa(nfa, "12", true, type);
+}
+
 
 /* combination test
    (01+11)*1+01+110*1
@@ -126,8 +168,7 @@ void test_nfa_12(TestType type)
 {
   Nfa* nfa = nfa_12();
 
-  // assert_nfa(nfa, "@",       true,  type);
-  assert_nfa(nfa, "",        false, type);
+  //assert_nfa(nfa, "@",       true,  type);
   assert_nfa(nfa, "011",     true,  type);
   assert_nfa(nfa, "111",     true,  type);
   assert_nfa(nfa, "01011",   true,  type);
@@ -180,7 +221,7 @@ void test_nfa_11(TestType type)
 {
   Nfa* nfa = nfa_11();
 
-  assert_nfa(nfa, "", false, type);
+  //assert_nfa(nfa, "", false, type);
   // assert_nfa(nfa, "@", false, type);
   assert_nfa(nfa, "a", false, type);
   assert_nfa(nfa, "ab", false, type);
@@ -618,6 +659,9 @@ void test_nfa(int num, TestType type)
     case 12:
       test_nfa_12(type);
       break;
+    case 13:
+      test_nfa_13(type);
+      break;
     default:
       return;
 }
@@ -676,12 +720,99 @@ void test_all(TestType type)
   }
 }
 
+void test_partition()
+{
+  Nfa* nfa = new Nfa();
+  Node* s1 = new Node("s1");
+  Node* s2 = new Node("s2");
+  //Node* s3 = new Node("s3");
+  //Node* s4 = new Node("s4");
+  //Node* s5 = new Node("s5");
+  Node* s6 = new Node("s6");
+  //Node* s7 = new Node("s7");
+  //Node* s8 = new Node("s8");
+  //Node* s9 = new Node("s9");
+  //Node* s10 = new Node("s10");
+  nfa->makeFinal(*s1);
+  nfa->makeFinal(*s2);
+  //nfa->makeFinal(*s3);
+  //nfa->makeFinal(*s4);
+  //nfa->makeFinal(*s5);
+  //nfa->makeFinal(*s6);
+  //nfa->makeFinal(*s7);
+  //nfa->makeFinal(*s8);
+  //nfa->makeFinal(*s9);
+  //nfa->makeFinal(*s10);
+  nfa->makeInitial(*s6);
+  QList<QSet<Node*>*>* list = nfa->partition();
+  printf("List size: %d\n", list->size());
+  int i;
+  for (i = 0; i < list->size(); i++) 
+  {
+    printf("\tSet size: %d\n", (*list)[i]->size());
+    QSetIterator<Node*> j(*(*list)[i]);
+    while (j.hasNext()) 
+    {
+      printf("\t\tNode: %s\n", j.next()->getName().toStdString().c_str());
+    }
+  }
+}
+
+void test_runNfaP()
+{
+  Nfa* nfa = new Nfa();
+  Node* s1 = new Node("s1");
+  Node* s2 = new Node("s2");
+  //Node* s3 = new Node("s3");
+  //Node* s4 = new Node("s4");
+  //Node* s5 = new Node("s5");
+  Node* s6 = new Node("s6");
+  //Node* s7 = new Node("s7");
+  //Node* s8 = new Node("s8");
+  //Node* s9 = new Node("s9");
+  //Node* s10 = new Node("s10");
+  nfa->makeFinal(*s1);
+  nfa->makeFinal(*s2);
+  //nfa->makeFinal(*s3);
+  //nfa->makeFinal(*s4);
+  //nfa->makeFinal(*s5);
+  //nfa->makeFinal(*s6);
+  //nfa->makeFinal(*s7);
+  //nfa->makeFinal(*s8);
+  //nfa->makeFinal(*s9);
+  //nfa->makeFinal(*s10);
+  nfa->makeInitial(*s6);
+
+  nfa->addTransition(*s6, *s1, "@");
+  nfa->addTransition(*s1, *s2, "1");
+  nfa->star();
+
+  nfa->runNfaP("11111111111111");
+}
+
 /*
  * Runs the tests
  */
 int main()
 {
-  test_all(TestTypeSequential);
+  //test_nfa(1, TestTypeParallel);
+  //test_all(TestTypeParallel);
+  QTime timer;
+  Nfa* nfa = nfa_12();
+  QString str("");
+  for(int i = 0; i < 1000000; i++)
+    str += (i % 2 == 0 ? "0" : "1"); 
+  timer.start();
+  bool seq_return = nfa->isValidString(str, false);
+  int seq_time = timer.elapsed();
+  timer.restart();
+  bool par_return = nfa->isValidString(str, true);
+  int par_time = timer.elapsed();
+
+  printf("Sequential time: %d\n", seq_time);
+  printf("Parallel time %d\n", par_time);
+  //test_partition();
+  //test_runNfaP();
   // test_nfa(11, TestTypeSequential);
   //test_raw_states();
   printf("\n");
