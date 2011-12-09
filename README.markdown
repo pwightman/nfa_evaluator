@@ -21,8 +21,8 @@ a->star();
 
 // Run strings on the Nfa
 
-a->isValidString("aaaaabbc", false); // returns true
-a->isValidString("aabbcc", false);   // returns true
+a->isValidString("acbc", false);     // returns true
+a->isValidString("acacacac", false); // returns true
 a->isValidString("xyz", false);      // returns false
 ```
 
