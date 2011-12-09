@@ -2,9 +2,9 @@
 
 This evaluator supports building and traversing NFA's based on Regular Expressions that support the following actions:
 
-* a + b (union)
-* ab (concatenation)
-* a* (Kleene star)
+* `a + b` (union)
+* `ab` (concatenation)
+* `a*` (Kleene star)
 
 ### General Usage
 
