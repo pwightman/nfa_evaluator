@@ -1,3 +1,4 @@
+#include "timing.h"
 #include <stdio.h>
 #include <QString>
 #include <QVector>
@@ -797,24 +798,11 @@ int main()
 {
   //test_nfa(1, TestTypeParallel);
   //test_all(TestTypeParallel);
-  QTime timer;
-  Nfa* nfa = nfa_12();
-  QString str("");
-  for(int i = 0; i < 1000000; i++)
-    str += (i % 2 == 0 ? "0" : "1"); 
-  timer.start();
-  bool seq_return = nfa->isValidString(str, false);
-  int seq_time = timer.elapsed();
-  timer.restart();
-  bool par_return = nfa->isValidString(str, true);
-  int par_time = timer.elapsed();
-
-  printf("Sequential time: %d\n", seq_time);
-  printf("Parallel time %d\n", par_time);
   //test_partition();
   //test_runNfaP();
   // test_nfa(11, TestTypeSequential);
   //test_raw_states();
+  run_timing();
   printf("\n");
 }
 

@@ -210,7 +210,8 @@ QSet<Node*>* Nfa::traverse(QSet<Node*>* node, QString* str, int direction)
       if(direction == FORWARDS)
       {
         limit = (str->size() % 2 == 0 ? str->size() / 2 + 1 : str->size() / 2 );
-        printf("FORWARDS: i: %d, limit: %d\n", i, limit);//(direction == FORWARDS ? "Forwards" : "Backwards"));
+        if(VERBOSE)
+          printf("FORWARDS: i: %d, limit: %d\n", i, limit);//(direction == FORWARDS ? "Forwards" : "Backwards"));
       }
       /* Backwards */
       else
@@ -218,7 +219,8 @@ QSet<Node*>* Nfa::traverse(QSet<Node*>* node, QString* str, int direction)
         limit = str->size() / 2 + 1;
         incr = -1;
         i = str->size() - 1;
-        printf("BACKWARDS: i: %d, limit: %d, string length: %d\n", i, limit, str->size());//(direction == FORWARDS ? "Forwards" : "Backwards"));
+        if(VERBOSE)
+          printf("BACKWARDS: i: %d, limit: %d, string length: %d\n", i, limit, str->size());//(direction == FORWARDS ? "Forwards" : "Backwards"));
       }
     }
 
