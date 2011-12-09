@@ -15,7 +15,7 @@ Nfa* a = Nfa::simple("a");
 Nfa* b = Nfa::simple("b");
 Nfa* c = Nfa::simple("c");
 
-a->union(b);
+a->unite(b);
 a->concatenate(c);
 a->star();
 
@@ -27,4 +27,5 @@ a->isValidString("xyz", false);      // returns false
 ```
 
 The booleans being passed into `isValidString` determine whether the evaluation should occur in parallel or not.
-_NOTE_: Parallel evaluation is currently broken
+
+__NOTE__: Parallel evaluation is currently broken
