@@ -318,18 +318,21 @@ void* traverseP(void* _params)
   int direction = (params->isInitial ? FORWARDS : BACKWARDS);
   QSet<Node*>* results = params->nfa->traverse(params->nodes, params->str, direction);
 
-  return results;
+  return _params;
 }
 
 bool Nfa::runNfaP(QString string)
 {
   /* Create the partition of states */
   QList<QSet<Node*>*>* part = partition();
-  /* Holder for the resulting sets of the traversals */
-  QList<QSet<Node*>*>* results = new QList<QSet<Node*>*>();
 
+  /* Allocate threads depending on size partitioning */
   pthread_t* threads = (pthread_t*)malloc(part->size()*sizeof(pthread_t));
+  /* Allocate params for each thread */
   NfaParams* params = (NfaParams*)malloc(part->size()*sizeof(NfaParams));
+  /* Initial state set will be stored here later in the code */
+  QSet<Node*>* initialStateSet = NULL;
+  /* Loop counter */
   int i;
 
   /*
@@ -344,31 +347,33 @@ bool Nfa::runNfaP(QString string)
     /* If the set is the initial state, mark it as such */
     if (i == part->size() - 1) 
     {
+      initialStateSet = part->at(i);
       params[i].isInitial = true;
     }
     else
     {
       params[i].isInitial = false;
     }
+    /* Assign the params being sent to the thread the list it will be working on */
     params[i].nodes = part->at(i);
+    /* Send off the thread! */
     pthread_create(&threads[i], NULL, &traverseP, &params[i]);
   }
 
+  /* Reap the threads */
   for (i = 0; i < part->size(); i++) 
   {
-    QSet<Node*>* ptr = NULL;
+    int* ptr;
     pthread_join(threads[i], (void**)&ptr);
-    results->append(ptr);
   }
 
-  QSet<Node*>* initialStateSet = results->last();
   bool intersects = false;
 
-  for(i = 0; i < results->size(); i++)
+  /* Again, we're assuming the last list is the inital state so we aren't checking it */
+  /* If there's any intersection between the initial set and the final sets then it was a valid string */
+  for(i = 0; i < part->size() - 1; i++)
   {
-    //printf("Set %d size: %d %s\n", i, (*results)[i]->size(), (params[i].isInitial ? "INITIAL" : ""));
-    //printSet((*results)[i]);
-    if(initialStateSet->intersect(*results->at(i)).size() > 0)
+    if(initialStateSet->intersect(*part->at(i)).size() > 0)
       intersects = true;
   }
 

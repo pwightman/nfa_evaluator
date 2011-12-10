@@ -797,12 +797,12 @@ void test_runNfaP()
 int main()
 {
   //test_nfa(1, TestTypeParallel);
-  //test_all(TestTypeParallel);
+  test_all(TestTypeBoth);
   //test_partition();
   //test_runNfaP();
   // test_nfa(11, TestTypeSequential);
   //test_raw_states();
-  run_timing();
+  //run_timing();
   printf("\n");
 }
 
